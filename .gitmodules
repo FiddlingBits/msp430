@@ -1,0 +1,3 @@
+[submodule "eclectic"]
+	path = eclectic
+	url = git@github.com:FiddlingBits/eclectic.git
