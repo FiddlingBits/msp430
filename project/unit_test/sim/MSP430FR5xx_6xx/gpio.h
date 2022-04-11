@@ -1017,4 +1017,7 @@ extern void GPIO_selectInterruptEdge(uint8_t selectedPort,
 #endif
 
 #endif
+
+extern const uint16_t GPIO_PORT_TO_BASE[];
+
 #endif // __MSP430WARE_GPIO_H__

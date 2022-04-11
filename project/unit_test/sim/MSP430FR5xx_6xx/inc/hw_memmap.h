@@ -43,4 +43,6 @@ extern uint8_t hwMemmap_memory[65536];
 #define HWREG16(x) (*((uint16_t *)(&hwMemmap_memory[x])))
 #define HWREG32(x) (*((uint32_t *)(&hwMemmap_memory[x])))
 
+extern void hwMemmap_init(void);
+
 #endif // #ifndef __HW_MEMMAP__

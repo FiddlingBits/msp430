@@ -25,9 +25,12 @@ LIBRARY_DEFINES :=   \
 # Compiler Flags
 ####################################################################################################
 
-APPLICATION_COMPILER_FLAGS := \
-  -Weverything                \
-  -Wno-documentation          \
+APPLICATION_COMPILER_FLAGS :=        \
+  -Weverything                       \
+  -Wno-cast-align                    \
+  -Wno-documentation                 \
+  -Wno-documentation-unknown-command \
+  -Wno-reserved-id-macro             \
   -Wno-unknown-pragmas
 
 LIBRARY_COMPILER_FLAGS := \
@@ -37,9 +40,12 @@ LIBRARY_COMPILER_FLAGS := \
 # Include Paths
 ####################################################################################################
 
-APPLICATION_INCLUDE_PATHS := \
-  -I./sim/MSP430FR5xx_6xx/   \
-  -I./unity/
+APPLICATION_INCLUDE_PATHS :=   \
+  -I./sim/MSP430FR5xx_6xx/     \
+  -I./sim/MSP430FR5xx_6xx/inc/ \
+  -I./unity/                   \
+  -I../../app/                 \
+  -I../../driver
 
 LIBRARY_INCLUDE_PATHS :=   \
   -I./sim/MSP430FR5xx_6xx/ \
@@ -50,9 +56,11 @@ LIBRARY_INCLUDE_PATHS :=   \
 ####################################################################################################
 
 APPLICATION_SOURCES := \
-  ./main.c
+  ./main.c             \
+  ./test/system_test.c \
+  ../../app/system.c
 
-LIBRARY_SOURCES :=                                 \
+LIBRARY_SOURCES :=                      \
   ./sim/MSP430FR5xx_6xx/adc12_b.c       \
   ./sim/MSP430FR5xx_6xx/aes256.c        \
   ./sim/MSP430FR5xx_6xx/comp_e.c        \
@@ -69,6 +77,7 @@ LIBRARY_SOURCES :=                                 \
   ./sim/MSP430FR5xx_6xx/framctl_a.c     \
   ./sim/MSP430FR5xx_6xx/gpio.c          \
   ./sim/MSP430FR5xx_6xx/hspll.c         \
+  ./sim/MSP430FR5xx_6xx/intrinsics.c    \
   ./sim/MSP430FR5xx_6xx/lcd_c.c         \
   ./sim/MSP430FR5xx_6xx/mpu.c           \
   ./sim/MSP430FR5xx_6xx/mpy32.c         \

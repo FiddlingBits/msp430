@@ -24,4 +24,26 @@
 		<nature>org.eclipse.cdt.core.ccnature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>app</name>
+			<type>2</type>
+			<locationURI>PARENT-3-PROJECT_LOC/app</locationURI>
+		</link>
+		<link>
+			<name>driver</name>
+			<type>2</type>
+			<locationURI>PARENT-3-PROJECT_LOC/driver</locationURI>
+		</link>
+		<link>
+			<name>eclectic</name>
+			<type>2</type>
+			<locationURI>PARENT-3-PROJECT_LOC/eclectic</locationURI>
+		</link>
+		<link>
+			<name>lib</name>
+			<type>2</type>
+			<locationURI>PARENT-3-PROJECT_LOC/lib</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

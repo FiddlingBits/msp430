@@ -610,4 +610,8 @@ extern void CS_setDCOFreq(uint16_t dcorsel,
 #endif
 
 #endif
+
+extern uint32_t privateLFXTClockFrequency;
+extern uint32_t privateHFXTClockFrequency;
+
 #endif // __MSP430WARE_CS_H__

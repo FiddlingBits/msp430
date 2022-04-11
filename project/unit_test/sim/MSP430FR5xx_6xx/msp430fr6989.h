@@ -68,7 +68,7 @@ extern "C" {
 #define SFR_8BIT(address)   extern volatile unsigned char address
 #define SFR_16BIT(address)  extern volatile unsigned int address
 //#define SFR_20BIT(address)  extern volatile unsigned int address
-typedef void (* __SFR_FARPTR)();
+typedef void (* __SFR_FARPTR)(void);
 #define SFR_20BIT(address) extern __SFR_FARPTR address
 #define SFR_32BIT(address)  extern volatile unsigned long address
 
@@ -3920,7 +3920,7 @@ SFR_8BIT(PMMCTL0_H);                          /* PMM Control 0 */
 SFR_16BIT(PMMIFG);                            /* PMM Interrupt Flag */
 SFR_8BIT(PMMIFG_L);                           /* PMM Interrupt Flag */
 SFR_8BIT(PMMIFG_H);                           /* PMM Interrupt Flag */
-SFR_16BIT(PM5CTL0);                           /* PMM Power Mode 5 Control Register 0 */
+#define PM5CTL0 HWREG16(PMM_BASE + OFS_PM5CTL0) /* PMM Power Mode 5 Control Register 0 */
 SFR_8BIT(PM5CTL0_L);                          /* PMM Power Mode 5 Control Register 0 */
 SFR_8BIT(PM5CTL0_H);                          /* PMM Power Mode 5 Control Register 0 */
 

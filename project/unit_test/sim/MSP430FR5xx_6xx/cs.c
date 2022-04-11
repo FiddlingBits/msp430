@@ -64,7 +64,7 @@
 // CS_LFXTByPassWithTimeout.
 //
 //*****************************************************************************
-static uint32_t privateLFXTClockFrequency = 0;
+uint32_t privateLFXTClockFrequency = 0;
 
 //*****************************************************************************
 //
@@ -75,7 +75,7 @@ static uint32_t privateLFXTClockFrequency = 0;
 // CS_LFXTByPassWithTimeout.
 //
 //*****************************************************************************
-static uint32_t privateHFXTClockFrequency = 0;
+uint32_t privateHFXTClockFrequency = 0;
 
 static uint32_t privateCSASourceClockFromDCO (uint8_t clockdivider)
 {

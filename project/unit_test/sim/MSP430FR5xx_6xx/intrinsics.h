@@ -166,4 +166,8 @@ unsigned long  __data20_read_long(unsigned long);
 } /* extern "C" */
 #endif /* __cplusplus */
 
+#include <stdbool.h>
+
+extern bool intrinsics_getInterruptsEnabled(void);
+
 #endif /* _INTRINSICS_H_ */
