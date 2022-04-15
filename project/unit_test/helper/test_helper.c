@@ -1,35 +1,27 @@
 /****************************************************************************************************
- * FILE:    main.c
- * BRIEF:   Main Source File
+ * FILE:    system.c
+ * BRIEF:   System Source File
  ****************************************************************************************************/
 
 /****************************************************************************************************
  * Includes
  ****************************************************************************************************/
 
-#include "cli_callback.h"
-#include "system.h"
+#include "cli_callback_test_helper.h"
+#include "test_helper.h"
 
 /****************************************************************************************************
  * Function Definitions (Public)
  ****************************************************************************************************/
 
 /****************************************************************************************************
- * FUNCT:   main
- * BRIEF:   Main Entry
+ * FUNCT:   testHelper_init
+ * BRIEF:   Initialize
  * RETURN:  Returns Nothing
  * ARG:     No Arguments
- * NOTE:    Does Not Return
  ****************************************************************************************************/
-void main(void)
+void testHelper_init(void)
 {
-    /*** Initialize System ***/
-    system_init();
-
-    /*** Infinite Loop ***/
-    while(1)
-    {
-        /*** Tick ***/
-        cliCallback_tick();
-    }
+    /*** Initialize ***/
+    cliCallbackTestHelper_init();
 }

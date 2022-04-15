@@ -1645,6 +1645,7 @@ typedef void (* __SFR_FARPTR)();
 #define DCOFSEL0               (0x0002)       /* DCO frequency select Bit: 0 */
 #define DCOFSEL1               (0x0004)       /* DCO frequency select Bit: 1 */
 #define DCOFSEL2               (0x0008)       /* DCO frequency select Bit: 2 */
+#define DCOFSEL                (DCOFSEL2 | DCOFSEL1 | DCOFSEL0)
 #define DCORSEL                (0x0040)       /* DCO range select. */
 
 /* CSCTL1 Control Bits */
@@ -1767,16 +1768,19 @@ typedef void (* __SFR_FARPTR)();
 #define DIVM0                  (0x0001)       /* MCLK Divider Bit: 0 */
 #define DIVM1                  (0x0002)       /* MCLK Divider Bit: 1 */
 #define DIVM2                  (0x0004)       /* MCLK Divider Bit: 2 */
+#define DIVM                   (DIVM2 | DIVM2 | DIVM0)
 //#define RESERVED            (0x0004)    /* RESERVED */
 //#define RESERVED            (0x0008)    /* RESERVED */
 #define DIVS0                  (0x0010)       /* SMCLK Divider Bit: 0 */
 #define DIVS1                  (0x0020)       /* SMCLK Divider Bit: 1 */
 #define DIVS2                  (0x0040)       /* SMCLK Divider Bit: 2 */
+#define DIVS                   (DIVS2 | DIVS1 | DIVS0)
 //#define RESERVED            (0x0040)    /* RESERVED */
 //#define RESERVED            (0x0080)    /* RESERVED */
 #define DIVA0                  (0x0100)       /* ACLK Divider Bit: 0 */
 #define DIVA1                  (0x0200)       /* ACLK Divider Bit: 1 */
 #define DIVA2                  (0x0400)       /* ACLK Divider Bit: 2 */
+#define DIVA                   (DIVA2 | DIVA1 | DIVA0)
 //#define RESERVED            (0x0400)    /* RESERVED */
 //#define RESERVED            (0x0800)    /* RESERVED */
 //#define RESERVED            (0x1000)    /* RESERVED */
@@ -1959,6 +1963,7 @@ typedef void (* __SFR_FARPTR)();
 #define DMA0TSEL2              (0x0004)       /* DMA channel 0 transfer select bit 2 */
 #define DMA0TSEL3              (0x0008)       /* DMA channel 0 transfer select bit 3 */
 #define DMA0TSEL4              (0x0010)       /* DMA channel 0 transfer select bit 4 */
+#define DMA0TSEL               (DMA0TSEL4 | DMA0TSEL3 | DMA0TSEL2 | DMA0TSEL1 | DMA0TSEL0)
 #define DMA1TSEL0              (0x0100)       /* DMA channel 1 transfer select bit 0 */
 #define DMA1TSEL1              (0x0200)       /* DMA channel 1 transfer select bit 1 */
 #define DMA1TSEL2              (0x0400)       /* DMA channel 1 transfer select bit 2 */
@@ -1993,6 +1998,7 @@ typedef void (* __SFR_FARPTR)();
 #define DMADT0                 (0x1000)       /* DMA transfer mode bit 0 */
 #define DMADT1                 (0x2000)       /* DMA transfer mode bit 1 */
 #define DMADT2                 (0x4000)       /* DMA transfer mode bit 2 */
+#define DMADT                  (DMADT2 | DMADT1 | DMADT0)
 
 #define DMASWDW                (0*0x0040u)    /* DMA transfer: source word to destination word */
 #define DMASBDW                (1*0x0040u)    /* DMA transfer: source byte to destination word */

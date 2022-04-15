@@ -107,7 +107,7 @@ unsigned short   __swap_bytes(unsigned short a);
 /*---------------------------------------------------------------------------*/
 /* MSP430X Intrinsics                                                        */
 /*---------------------------------------------------------------------------*/
-void           __data16_write_addr(unsigned short, unsigned long);
+#define __data16_write_addr(PERIPHERAL_ADDRESS, SOURCE_ADDRESS) (HWREG16((PERIPHERAL_ADDRESS)) = (SOURCE_ADDRESS)) 
 unsigned long  __data16_read_addr(unsigned short);
 void           __data20_write_char(unsigned long, unsigned char);
 void           __data20_write_short(unsigned long, unsigned short);

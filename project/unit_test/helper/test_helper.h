@@ -1,16 +1,15 @@
 /****************************************************************************************************
- * FILE:    system.h
- * BRIEF:   System Header File
+ * FILE:    test_helper.h
+ * BRIEF:   Test Helper Header File
  ****************************************************************************************************/
 
-#ifndef SYSTEM_H
-#define SYSTEM_H
+#ifndef TEST_HELPER_H
+#define TEST_HELPER_H
 
 /****************************************************************************************************
  * Function Prototypes
  ****************************************************************************************************/
 
-extern void system_init(void);
-extern void system_reset(void);
+extern void testHelper_init(void);
 
 #endif

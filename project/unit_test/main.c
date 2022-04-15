@@ -7,7 +7,6 @@
  * Includes
  ****************************************************************************************************/
 
-#include "hw_memmap.h"
 #include <stdio.h>
 #include "unity_fixture.h"
 
@@ -29,10 +28,7 @@ static void main_runTestGroups(void);
  * ARG:     argv: Argument String List
  ****************************************************************************************************/
 int main(int argc, const char *argv[])
-{
-    /*** Set Up ***/
-    hwMemmap_init();
-    
+{    
     /*** Start Unity Unit Test Framework ***/
     (void)printf("Unity Unit Test Framework Version: %u.%u.%u\n", UNITY_VERSION_MAJOR, UNITY_VERSION_MINOR, UNITY_VERSION_BUILD);
     return UnityMain(argc, argv, main_runTestGroups);
@@ -51,5 +47,7 @@ int main(int argc, const char *argv[])
 static void main_runTestGroups(void)
 {
     /*** Run Test Groups ***/
-    RUN_TEST_GROUP(system_test);
+    RUN_TEST_GROUP(cli_callback_test)
+    RUN_TEST_GROUP(cli_command_handler_callback_test)
+    RUN_TEST_GROUP(system_test)
 }

@@ -15,6 +15,7 @@
 #include "msp430fr6989.h"
 #include <stdint.h>
 #include "system.h"
+#include "test_helper.h"
 #include "unity_fixture.h"
 
 /****************************************************************************************************
@@ -30,7 +31,9 @@ TEST_GROUP(system_test);
 TEST_SETUP(system_test)
 {
     /*** Set Up ***/
+    hwMemmap_init();
     system_init();
+    testHelper_init();
 }
 
 TEST_TEAR_DOWN(system_test)
@@ -47,8 +50,8 @@ TEST(system_test, init)
      * Test 1: Initialize
      ********************************************************************************/
     
-    /*** Subtest 1: Watchdog Disabled ***/
-    TEST_ASSERT_EQUAL_HEX16(WDTHOLD, HWREG16(WDT_A_BASE + OFS_WDTCTL) & WDTHOLD); // Disabled/Stopped: WDTCTL.WDTHOLD - 1b
+    /*** Subtest 1: Watchdog Disabled/Stopped ***/
+    TEST_ASSERT_EQUAL_HEX16(WDTHOLD, HWREG16(WDT_A_BASE + OFS_WDTCTL) & WDTHOLD); // Disabled/Stopped: WDTCTL.WDTHOLD = 1b
     
     /*** Subtest 2: GPIO Power-On Default High-Impedance Mode Disabled ***/
     TEST_ASSERT_EQUAL_HEX16(0, HWREG16(PMM_BASE + OFS_PM5CTL0) & LOCKLPM5); // Disabled/Unlocked: PM5CTL0.LOCKLPM5 = 0b
@@ -99,19 +102,30 @@ TEST(system_test, initClocks)
     
     /*** Subtest 1: Digitally Controlled Oscillator (DCO) ***/
     TEST_ASSERT_EQUAL_HEX16(0, HWREG16(CS_BASE + OFS_CSCTL1) & DCORSEL); // Low Speeed Device: CTL1.DCORSEL = 0b
-    TEST_ASSERT_EQUAL_HEX16(CS_DCOFSEL_6, HWREG16(CS_BASE + OFS_CSCTL1) & (DCOFSEL2 | DCOFSEL1 | DCOFSEL0)); // 8 MHz: CTL1.DCORSEL = 011b
+    TEST_ASSERT_EQUAL_HEX16(CS_DCOFSEL_6, HWREG16(CS_BASE + OFS_CSCTL1) & DCOFSEL); // 8 MHz: CTL1.DCORSEL = 011b
     
     /*** Subtest 2: Auxiliary Clock (ACLK) ***/
     TEST_ASSERT_EQUAL_HEX16(CS_LFXTCLK_SELECT << 8, HWREG16(CS_BASE + OFS_CSCTL2) & SELA_7); // LFXT Is Source: CTL2.SELA = 000b
-    TEST_ASSERT_EQUAL_HEX16(CS_CLOCK_DIVIDER_1 << 8, HWREG16(CS_BASE + OFS_CSCTL3) & (DIVA2 | DIVA1 | DIVA0)); // Clock Divider Is 1: 000b
+    TEST_ASSERT_EQUAL_HEX16(CS_CLOCK_DIVIDER_1 << 8, HWREG16(CS_BASE + OFS_CSCTL3) & DIVA); // Clock Divider Is 1: 000b
     
     /*** Subtest 3: Master Clock (MCLK) ***/
     TEST_ASSERT_EQUAL_HEX16(CS_DCOCLK_SELECT, HWREG16(CS_BASE + OFS_CSCTL2) & SELM_7); // DCO Is Source: CTL2.SELM = 011b
-    TEST_ASSERT_EQUAL_HEX16(CS_CLOCK_DIVIDER_1, HWREG16(CS_BASE + OFS_CSCTL3) & (DIVM2 | DIVM1 | DIVM0)); // Clock Divider Is 1: 000b
+    TEST_ASSERT_EQUAL_HEX16(CS_CLOCK_DIVIDER_1, HWREG16(CS_BASE + OFS_CSCTL3) & DIVM); // Clock Divider Is 1: 000b
     
     /*** Subtest 4: Sub-Main CLock (SMCLK) ***/
     TEST_ASSERT_EQUAL_HEX16(CS_DCOCLK_SELECT << 4, HWREG16(CS_BASE + OFS_CSCTL2) & SELS_7); // DCO Is Source: CTL2.SELS = 011b
-    TEST_ASSERT_EQUAL_HEX16(CS_CLOCK_DIVIDER_1 << 4, HWREG16(CS_BASE + OFS_CSCTL3) & (DIVS2 | DIVS1 | DIVS0)); // Clock Divider Is 1: 000b
+    TEST_ASSERT_EQUAL_HEX16(CS_CLOCK_DIVIDER_1 << 4, HWREG16(CS_BASE + OFS_CSCTL3) & DIVS); // Clock Divider Is 1: 000b
+}
+
+TEST(system_test, reset)
+{
+    /********************************************************************************
+     * Test 1:  Reset
+     ********************************************************************************/
+    
+    /* Subtest 1: System Reset */
+    system_reset();
+    TEST_ASSERT_EQUAL_HEX16(~WDTPW, HWREG16(WDT_A_BASE + OFS_WDTCTL)); // If WDTPW Isn't Written A Power Up Clear (PUC) Is Generated
 }
 
 /****************************************************************************************************
@@ -120,6 +134,7 @@ TEST(system_test, initClocks)
 
 TEST_GROUP_RUNNER(system_test)
 {
-    RUN_TEST_CASE(system_test, init);
-    RUN_TEST_CASE(system_test, initClocks);
+    RUN_TEST_CASE(system_test, init)
+    RUN_TEST_CASE(system_test, initClocks)
+    RUN_TEST_CASE(system_test, reset)
 }

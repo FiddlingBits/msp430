@@ -1,16 +1,15 @@
 /****************************************************************************************************
- * FILE:    system.h
- * BRIEF:   System Header File
+ * FILE:    interrupt_handler.h
+ * BRIEF:   Interrupt Handler Header File
  ****************************************************************************************************/
 
-#ifndef SYSTEM_H
-#define SYSTEM_H
+#ifndef INTERRUPT_HANDLER_H
+#define INTERRUPT_HANDLER_H
 
 /****************************************************************************************************
  * Function Prototypes
  ****************************************************************************************************/
 
-extern void system_init(void);
-extern void system_reset(void);
+extern __interrupt void interruptHandler_usciA1Vector(void);
 
 #endif
