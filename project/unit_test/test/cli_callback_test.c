@@ -14,6 +14,7 @@
 #include "gpio.h"
 #include "hw_memmap.h"
 #include "msp430fr5xx_6xxgeneric.h"
+#include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
 #include "system.h"
@@ -99,7 +100,7 @@ TEST(cli_callback_test, printfCallback)
      ********************************************************************************/
     
     /*** Set Up ***/
-    cliCallback_printfCallback("Test");
+    cliCallback_printfCallback(true, "Test"); // Flush
     
     /*** Subtest 1: Initialized ***/
     TEST_ASSERT_EQUAL_HEX16(DMA_TRANSFER_BLOCK, HWREG16(DMA_BASE + DRIVER_CONFIG_CLI_DMA_CHANNEL + OFS_DMA0CTL) & DMADT); // Transfer Mode: Block: DMA0CTL.DMADT = 001b
@@ -132,7 +133,7 @@ TEST(cli_callback_test, printfCallback)
     expectedOutput = "";
     
     /* Printf */
-    cliCallback_printfCallback("");
+    cliCallback_printfCallback(true, ""); // Flush
     
     /* Verify Output As Expected */
     cliCallbackTestHelper_getPrintfOutputCopy(actualOutput);
@@ -143,7 +144,7 @@ TEST(cli_callback_test, printfCallback)
     expectedOutput = "String Without Arguments\n";
     
     /* Printf */
-    cliCallback_printfCallback("String Without Arguments\n");
+    cliCallback_printfCallback(true, "String Without Arguments\n"); // Flush
     
     /* Verify Output As Expected */
     cliCallbackTestHelper_getPrintfOutputCopy(actualOutput);
@@ -154,7 +155,7 @@ TEST(cli_callback_test, printfCallback)
     expectedOutput = "String With 3.0 Arguments\n";
     
     /* Printf */
-    cliCallback_printfCallback("String %s %0.1f Argume%cts\n", "With", 3.0, 'n');
+    cliCallback_printfCallback(true, "String %s %0.1f Argume%cts\n", "With", 3.0, 'n'); // Flush
     
     /* Verify Output As Expected */
     cliCallbackTestHelper_getPrintfOutputCopy(actualOutput);

@@ -129,12 +129,14 @@ void cliCallback_interruptHandler(uint16_t InterruptFlag)
  * FUNCT:   cliCallback_printfCallback
  * BRIEF:   printf Callback
  * RETURN:  void: Returns Nothing
+ * ARG:     Flush: Flush (true) Or Don't Flush (false)
  * ARG:     Format: Format String
  * ARG:     ...: Optional Arguments
  ****************************************************************************************************/
-void cliCallback_printfCallback(const char * const Format, ...)
+void cliCallback_printfCallback(const bool Flush, const char * const Format, ...)
 {
     static char printfString[CLI_CALLBACK_PRINTF_CALLBACK_STRING_LENGTH];
+    static size_t i = 0;
     DMA_initParam dmaInit;
     va_list arguments;
 
@@ -149,28 +151,35 @@ void cliCallback_printfCallback(const char * const Format, ...)
 
     /*** Decode Format String And Optional Arguments And Write To Print String ***/
     va_start(arguments, Format);
-    (void)vsnprintf(printfString, sizeof(printfString), Format, arguments);
+    i += (size_t)vsnprintf(&printfString[i], sizeof(printfString) - i, Format, arguments);
     va_end(arguments);
 
-    /*** Initialize DMA ***/
-    dmaInit.channelSelect = DRIVER_CONFIG_CLI_DMA_CHANNEL;
-    dmaInit.transferModeSelect = DMA_TRANSFER_BLOCK;
-    dmaInit.transferSize = (uint16_t)strlen(printfString);
-    dmaInit.triggerSourceSelect = DRIVER_CONFIG_CLI_DMA_TRIGGER_SOURCE;
-    dmaInit.transferUnitSelect = DMA_SIZE_SRCBYTE_DSTBYTE;
-    dmaInit.triggerTypeSelect = DMA_TRIGGER_HIGH;
-    DMA_init(&dmaInit);
+    /*** Flush ***/
+    if(Flush)
+    {
+        /* Initialize DMA */
+        dmaInit.channelSelect = DRIVER_CONFIG_CLI_DMA_CHANNEL;
+        dmaInit.transferModeSelect = DMA_TRANSFER_BLOCK;
+        dmaInit.transferSize = (uint16_t)strlen(printfString);
+        dmaInit.triggerSourceSelect = DRIVER_CONFIG_CLI_DMA_TRIGGER_SOURCE;
+        dmaInit.transferUnitSelect = DMA_SIZE_SRCBYTE_DSTBYTE;
+        dmaInit.triggerTypeSelect = DMA_TRIGGER_HIGH;
+        DMA_init(&dmaInit);
 
-    /*** Set DMA Addresses And Start Transfer ***/
-    DMA_setSrcAddress(DRIVER_CONFIG_CLI_DMA_CHANNEL, (uint32_t)printfString, DMA_DIRECTION_INCREMENT);
-    DMA_setDstAddress(DRIVER_CONFIG_CLI_DMA_CHANNEL, EUSCI_A_UART_getTransmitBufferAddress(DRIVER_CONFIG_CLI_UART_BASE_ADDRESS), DMA_DIRECTION_UNCHANGED);
-    DMA_enableTransfers(DRIVER_CONFIG_CLI_DMA_CHANNEL);
-    DMA_startTransfer(DRIVER_CONFIG_CLI_DMA_CHANNEL); // DMA Is Disabled After Completion Of Block Transfer
+        /* Set DMA Addresses And Start Transfer */
+        DMA_setSrcAddress(DRIVER_CONFIG_CLI_DMA_CHANNEL, (uint32_t)printfString, DMA_DIRECTION_INCREMENT);
+        DMA_setDstAddress(DRIVER_CONFIG_CLI_DMA_CHANNEL, EUSCI_A_UART_getTransmitBufferAddress(DRIVER_CONFIG_CLI_UART_BASE_ADDRESS), DMA_DIRECTION_UNCHANGED);
+        DMA_enableTransfers(DRIVER_CONFIG_CLI_DMA_CHANNEL);
+        DMA_startTransfer(DRIVER_CONFIG_CLI_DMA_CHANNEL); // DMA Is Disabled After Completion Of Block Transfer
 
-    /*** Unit Test Only ***/
+        /* Reset Index */
+        i = 0;
+
+        /* Unit Test Only */
 #ifdef __UNIT_TEST__
-    cliCallbackTestHelper_copyPrintfOutput(printfString);
+        cliCallbackTestHelper_copyPrintfOutput(printfString);
 #endif
+    }
 }
 
 /****************************************************************************************************

@@ -98,25 +98,25 @@ static status_t cliCommandHandlerCallback_systemCommandHandlerCallback(uint8_t a
     /* Clock */
     if(clock)
     {
-        cliCallback_printfCallback("Auxiliary Clock (ACLK): %lu Hz\n", CS_getACLK());
-        cliCallback_printfCallback("Master Clock (MCLK): %lu Hz\n", CS_getMCLK());
-        cliCallback_printfCallback("Sub-Main CLock (SMCLK): %lu Hz\n", CS_getSMCLK());
+        cliCallback_printfCallback(false, "Auxiliary Clock (ACLK): %lu Hz\n", CS_getACLK());
+        cliCallback_printfCallback(false, "Master Clock (MCLK): %lu Hz\n", CS_getMCLK());
+        cliCallback_printfCallback(true, "Sub-Main CLock (SMCLK): %lu Hz\n", CS_getSMCLK()); // Flush
     }
 
     /* Help */
     if(help)
     {
-        cliCallback_printfCallback("usage: %s [OPTION]\n", CLI_COMMAND_HANDLER_CALLBACK_SYSTEM_COMMAND_NAME);
-        cliCallback_printfCallback("  -c, --clock (Clock Information)\n");
-        cliCallback_printfCallback("  -h, --help (Help)\n");
-        cliCallback_printfCallback("  -r, --reset (Reset)\n");
+        cliCallback_printfCallback(false, "usage: %s [OPTION]\n", CLI_COMMAND_HANDLER_CALLBACK_SYSTEM_COMMAND_NAME);
+        cliCallback_printfCallback(false, "  -c, --clock (Clock Information)\n");
+        cliCallback_printfCallback(false, "  -h, --help (Help)\n");
+        cliCallback_printfCallback(true, "  -r, --reset (Reset)\n"); // Flush
     }
 
     /* Reset (Must Come Last) */
     if(reset)
     {
-        cliCallback_printfCallback("Reset System\n");
-        cliCallback_printfCallback(""); // Wait Until Message Above Printed Before Resetting
+        cliCallback_printfCallback(true, "Reset System\n"); // Flush
+        cliCallback_printfCallback(true, ""); // Flush; Wait Until Message Above Printed Before Resetting
         system_reset();
     }
 
