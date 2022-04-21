@@ -12,7 +12,9 @@
 
 #include "dma.h"
 #include "gpio.h"
+#include "led_driver.h"
 #include "msp430fr6989.h"
+#include "timer_a.h"
 
 /****************************************************************************************************
  * Defines
@@ -40,5 +42,17 @@
 #define DRIVER_CONFIG_LFXT_GPIO_IN_PIN   (GPIO_PIN4)
 #define DRIVER_CONFIG_LFXT_GPIO_OUT_PORT (GPIO_PORT_PJ)
 #define DRIVER_CONFIG_LFXT_GPIO_OUT_PIN  (GPIO_PIN5)
+
+/*** LED ***/
+/* GPIO */
+#define DRIVER_CONFIG_LED_GPIO_LED_1_PORT (GPIO_PORT_P1)
+#define DRIVER_CONFIG_LED_GPIO_LED_1_PIN  (GPIO_PIN0)
+#define DRIVER_CONFIG_LED_GPIO_LED_2_PORT (GPIO_PORT_P9)
+#define DRIVER_CONFIG_LED_GPIO_LED_2_PIN  (GPIO_PIN7)
+
+/* Timer */
+#define DRIVER_CONFIG_LED_TIMER           (TIMER_A0_BASE)
+#define DRIVER_CONFIG_LED_TIMER_LED_1_CCR (TIMER_A_CAPTURECOMPARE_REGISTER_1)
+#define DRIVER_CONFIG_LED_TIMER_LED_2_CCR (TIMER_A_CAPTURECOMPARE_REGISTER_2)
 
 #endif

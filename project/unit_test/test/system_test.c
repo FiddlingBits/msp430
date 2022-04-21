@@ -15,7 +15,6 @@
 #include "msp430fr6989.h"
 #include <stdint.h>
 #include "system.h"
-#include "test_helper.h"
 #include "unity_fixture.h"
 
 /****************************************************************************************************
@@ -31,9 +30,11 @@ TEST_GROUP(system_test);
 TEST_SETUP(system_test)
 {
     /*** Set Up ***/
+    /* Simulation */
     hwMemmap_init();
+    
+    /* Application */
     system_init();
-    testHelper_init();
 }
 
 TEST_TEAR_DOWN(system_test)
@@ -65,7 +66,7 @@ TEST(system_test, initClocks)
     uint16_t baseAddress;
     
     /********************************************************************************
-     * Test 1:  Frequencies
+     * Test 1: Frequencies
      ********************************************************************************/
     
     /*** Subtest 1: Low-Frequency Crystal Oscillator (LFXT) ***/
@@ -75,7 +76,7 @@ TEST(system_test, initClocks)
     TEST_ASSERT_EQUAL_UINT32(0, privateHFXTClockFrequency);
     
     /********************************************************************************
-     * Test 2:  Low-Frequency Crystal Oscillator (LFXT)
+     * Test 2: Low-Frequency Crystal Oscillator (LFXT)
      ********************************************************************************/
     
     /*** Subtest 1: GPIO Pins ***/
@@ -120,7 +121,7 @@ TEST(system_test, initClocks)
 TEST(system_test, reset)
 {
     /********************************************************************************
-     * Test 1:  Reset
+     * Test 1: Reset
      ********************************************************************************/
     
     /* Subtest 1: System Reset */

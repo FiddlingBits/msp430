@@ -5505,10 +5505,12 @@ typedef void (* __SFR_FARPTR)();
 /* TAxCTL Control Bits */
 #define TASSEL1                (0x0200)       /* Timer A clock source select 1 */
 #define TASSEL0                (0x0100)       /* Timer A clock source select 0 */
+#define TASSEL                 (TASSEL1 | TASSEL0)
 #define ID1                    (0x0080)       /* Timer A clock input divider 1 */
 #define ID0                    (0x0040)       /* Timer A clock input divider 0 */
 #define MC1                    (0x0020)       /* Timer A mode control 1 */
 #define MC0                    (0x0010)       /* Timer A mode control 0 */
+#define MC                     (MC1 | MC0)
 #define TACLR                  (0x0004)       /* Timer A counter clear */
 #define TAIE                   (0x0002)       /* Timer A counter interrupt enable */
 #define TAIFG                  (0x0001)       /* Timer A counter interrupt flag */
@@ -5550,6 +5552,7 @@ typedef void (* __SFR_FARPTR)();
 #define OUTMOD2                (0x0080)       /* Output mode 2 */
 #define OUTMOD1                (0x0040)       /* Output mode 1 */
 #define OUTMOD0                (0x0020)       /* Output mode 0 */
+#define OUTMOD                 (OUTMOD2 | OUTMOD1 | OUTMOD0)
 #define CCIE                   (0x0010)       /* Capture/compare interrupt enable */
 #define CCI                    (0x0008)       /* Capture input signal (read) */
 #define OUT                    (0x0004)       /* PWM Output signal if output mode 0 */
@@ -5577,6 +5580,7 @@ typedef void (* __SFR_FARPTR)();
 #define TAIDEX0                (0x0001)       /* Timer A Input divider expansion Bit: 0 */
 #define TAIDEX1                (0x0002)       /* Timer A Input divider expansion Bit: 1 */
 #define TAIDEX2                (0x0004)       /* Timer A Input divider expansion Bit: 2 */
+#define TAIDEX                 (TAIDEX2 | TAIDEX1 | TAIDEX0)
 
 #define TAIDEX_0               (0*0x0001u)    /* Timer A Input divider expansion : /1 */
 #define TAIDEX_1               (1*0x0001u)    /* Timer A Input divider expansion : /2 */

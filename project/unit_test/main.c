@@ -49,5 +49,6 @@ static void main_runTestGroups(void)
     /*** Run Test Groups ***/
     RUN_TEST_GROUP(cli_callback_test)
     RUN_TEST_GROUP(cli_command_handler_callback_test)
+    RUN_TEST_GROUP(led_driver_test)
     RUN_TEST_GROUP(system_test)
 }

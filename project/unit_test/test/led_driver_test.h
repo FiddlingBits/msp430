@@ -1,26 +1,21 @@
 /****************************************************************************************************
- * FILE:    cli_command_handler_callback_test.h
- * BRIEF:   Command Line Interface (CLI) Command Handler Callback Test Header File
+ * FILE:    led_driver_test.h
+ * BRIEF:   LED (Light-Emitting Diode) Driver Test Header File
  ****************************************************************************************************/
 
-#ifndef CLI_COMMAND_HANDLER_CALLBACK_TEST_H
-#define CLI_COMMAND_HANDLER_CALLBACK_TEST_H
+#ifndef LED_DRIVER_TEST_H
+#define LED_DRIVER_TEST_H
 
 /****************************************************************************************************
  * Includes
  ****************************************************************************************************/
 
-#include "cli_callback_test.h"
-#include "cli_config.h"
+#include "led_driver.h"
 
 /****************************************************************************************************
- * Type Definitions
+ * Constants And Variables
  ****************************************************************************************************/
 
-typedef struct cliCommandHandlerCallbackTest_commandTestData_s
-{
-    char command[CLI_CONFIG_INPUT_MAXIMUM_LENGTH];
-    char expectedOutput[CLI_CALLBACK_TEST_PRINTF_OUTPUT_LENGTH];
-} cliCommandHandlerCallbackTest_commandTestData_t;
+extern ledDriver_ledBlink_t ledDriver_ledBlink[LED_DRIVER_LED_COUNT];
 
 #endif

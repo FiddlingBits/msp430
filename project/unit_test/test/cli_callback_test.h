@@ -1,27 +1,24 @@
 /****************************************************************************************************
- * FILE:    system.c
- * BRIEF:   System Source File
+ * FILE:    cli_callback_test.h
+ * BRIEF:   Command Line Interface (CLI) Callback Test Header File
  ****************************************************************************************************/
+
+#ifndef CLI_CALLBACK_TEST_H
+#define CLI_CALLBACK_TEST_H
 
 /****************************************************************************************************
- * Includes
+ * Defines
  ****************************************************************************************************/
 
-#include "cli_callback_test_helper.h"
-#include "test_helper.h"
-
-/****************************************************************************************************
- * Function Definitions (Public)
- ****************************************************************************************************/
+#define CLI_CALLBACK_TEST_PRINTF_OUTPUT_LENGTH (256)
 
 /****************************************************************************************************
- * FUNCT:   testHelper_init
- * BRIEF:   Initialize
- * RETURN:  Returns Nothing
- * ARG:     No Arguments
+ * Function Prototypes
  ****************************************************************************************************/
-void testHelper_init(void)
-{
-    /*** Initialize ***/
-    cliCallbackTestHelper_init();
-}
+
+extern void cliCallbackTest_copyPrintfOutput(const char * const Output);
+extern void cliCallbackTest_getPrintfOutputCopy(char * const copy);
+extern void cliCallbackTest_init(void);
+extern void cliCallbackTest_sendCommand(const char * const Command);
+
+#endif

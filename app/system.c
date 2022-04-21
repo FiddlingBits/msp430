@@ -13,8 +13,10 @@
 #include "cs.h"
 #include "driver_config.h"
 #include "gpio.h"
+#include "led_driver.h"
 #include "msp430fr6989.h"
 #include "pmm.h"
+#include "project.h"
 #include <stdint.h>
 #include "system.h"
 #include "wdt_a.h"
@@ -68,11 +70,8 @@ void system_reset(void)
     /*** Watchdog Timer Password Violation Generates A Power-Up Clear (PUC) Reset ***/
     HWREG16(WDT_A_BASE + OFS_WDTCTL) = (uint16_t)(~WDTPW); // If WDTPW Isn't Written A Power Up Clear (PUC) Is Generated
 
-    /*** Application Only ***/
-#ifndef __UNIT_TEST__
-    while(1)
-        continue;
-#endif
+    /*** Infinite Loop***/
+    PROJECT_INFINITE_LOOP;
 }
 
 /****************************************************************************************************
@@ -89,6 +88,7 @@ static void system_initApplication(void)
 {
     /*** First Stage Initialization: No Dependencies ***/
     cliCallback_init();
+    ledDriver_init();
 
     /*** Second Stage Initialization: Dependent On First Stage ***/
     (void)cli_init(cliCallback_alertProcessInputCallback, cliCallback_printfCallback);

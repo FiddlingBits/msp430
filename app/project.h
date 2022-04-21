@@ -1,24 +1,30 @@
 /****************************************************************************************************
- * FILE:    cli_callback_test_helper.h
- * BRIEF:   Command Line Interface (CLI) Callback Test Helper Header File
+ * FILE:    project.h
+ * BRIEF:   Project Header File
  ****************************************************************************************************/
 
-#ifndef CLI_CALLBACK_TEST_HELPER_H
-#define CLI_CALLBACK_TEST_HELPER_H
+#ifndef PROJECT_H
+#define PROJECT_H
 
 /****************************************************************************************************
  * Defines
  ****************************************************************************************************/
 
-#define CLI_CALLBACK_TEST_HELPER_PRINTF_OUTPUT_LENGTH (256)
+#ifdef __UNIT_TEST__
+  #define PROJECT_INFINITE_LOOP while(0)
+  #define PROJECT_STATIC
+#else
+  #define PROJECT_INFINITE_LOOP while(1)
+  #define PROJECT_STATIC        static
+#endif
 
 /****************************************************************************************************
- * Function Prototypes
+ * Includes
  ****************************************************************************************************/
 
-extern void cliCallbackTestHelper_copyPrintfOutput(const char * const Output);
-extern void cliCallbackTestHelper_getPrintfOutputCopy(char * const copy);
-extern void cliCallbackTestHelper_init(void);
-extern void cliCallbackTestHelper_sendCommand(const char * const Command);
+#ifdef __UNIT_TEST__
+  #include "cli_callback_test.h"
+  #include "led_driver_test.h"
+#endif
 
 #endif

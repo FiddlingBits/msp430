@@ -7,19 +7,86 @@
  * Includes
  ****************************************************************************************************/
 
+#include "cli.h"
 #include "cli_callback.h"
-#include "cli_callback_test_helper.h"
+#include "cli_callback_test.h"
 #include "driver_config.h"
 #include "eusci_a_uart.h"
 #include "gpio.h"
 #include "hw_memmap.h"
 #include "msp430fr5xx_6xxgeneric.h"
+#include "status.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
 #include "system.h"
-#include "test_helper.h"
 #include "unity_fixture.h"
+
+/****************************************************************************************************
+ * Constants and Variables
+ ****************************************************************************************************/
+
+static char cliCallbackTest_printfOutput[CLI_CALLBACK_TEST_PRINTF_OUTPUT_LENGTH];
+
+/****************************************************************************************************
+ * Function Definitions
+ ****************************************************************************************************/
+
+/****************************************************************************************************
+ * FUNCT:   cliCallbackTest_copyPrintfOutput
+ * BRIEF:   Copy Printf Output
+ * RETURN:  Returns Nothing
+ * ARG:     Output: Printf Output
+ ****************************************************************************************************/
+void cliCallbackTest_copyPrintfOutput(const char * const Output)
+{
+    /*** Copy Printf Output ***/
+    (void)strcat(cliCallbackTest_printfOutput, Output);
+}
+
+/****************************************************************************************************
+ * FUNCT:   cliCallbackTest_getPrintfOutputCopy
+ * BRIEF:   Get Printf Output Copy
+ * RETURN:  Returns Nothing
+ * ARG:     copy: Printf Output Copy
+ ****************************************************************************************************/
+void cliCallbackTest_getPrintfOutputCopy(char * const copy)
+{
+    /*** Get Printf Output Copy ***/
+    (void)strncpy(copy, cliCallbackTest_printfOutput, CLI_CALLBACK_TEST_PRINTF_OUTPUT_LENGTH);
+    cliCallbackTest_printfOutput[0] = '\0';
+}
+
+/****************************************************************************************************
+ * FUNCT:   cliCallbackTest_init
+ * BRIEF:   Initialize
+ * RETURN:  Returns Nothing
+ * ARG:     No Arguments
+ ****************************************************************************************************/
+void cliCallbackTest_init(void)
+{
+    /*** Initialize ***/
+    cliCallbackTest_printfOutput[0] = '\0';
+}
+
+/****************************************************************************************************
+ * FUNCT:   cliCallbackTest_sendCommand
+ * BRIEF:   Send Command
+ * RETURN:  Returns Nothing
+ * ARG:     Command: Command
+ ****************************************************************************************************/
+void cliCallbackTest_sendCommand(const char * const Command)
+{
+    size_t i;
+    
+    /*** Send Command ***/
+    /* Receive Character */
+    for(i = 0; i < strlen(Command); i++)
+        TEST_ASSERT_EQUAL_INT(STATUS_SUCCESS, cli_addReceiveCharacter(Command[i]));
+    
+    /* Process Input */
+    TEST_ASSERT_EQUAL_INT(STATUS_SUCCESS, cli_processInput());
+}
 
 /****************************************************************************************************
  * Test Group
@@ -34,9 +101,14 @@ TEST_GROUP(cli_callback_test);
 TEST_SETUP(cli_callback_test)
 {
     /*** Set Up ***/
+    /* Simulation */
     hwMemmap_init();
+    
+    /* Application */
     system_init();
-    testHelper_init();
+    
+    /* Test */
+    cliCallbackTest_init();
 }
 
 TEST_TEAR_DOWN(cli_callback_test)
@@ -93,7 +165,7 @@ TEST(cli_callback_test, init)
 TEST(cli_callback_test, printfCallback)
 {
     const char *expectedOutput;
-    char actualOutput[CLI_CALLBACK_TEST_HELPER_PRINTF_OUTPUT_LENGTH];
+    char actualOutput[CLI_CALLBACK_TEST_PRINTF_OUTPUT_LENGTH];
     
     /********************************************************************************
      * Test 1: DMA
@@ -121,7 +193,7 @@ TEST(cli_callback_test, printfCallback)
     TEST_ASSERT_EQUAL_HEX16(DMAREQ, HWREG16(DMA_BASE + DRIVER_CONFIG_CLI_DMA_CHANNEL + OFS_DMA0CTL) & DMAREQ);
     
     /*** Clean Up ***/
-    cliCallbackTestHelper_getPrintfOutputCopy(actualOutput);
+    cliCallbackTest_getPrintfOutputCopy(actualOutput);
     TEST_ASSERT_EQUAL_STRING("Test", actualOutput);
     
     /********************************************************************************
@@ -135,8 +207,8 @@ TEST(cli_callback_test, printfCallback)
     /* Printf */
     cliCallback_printfCallback(true, ""); // Flush
     
-    /* Verify Output As Expected */
-    cliCallbackTestHelper_getPrintfOutputCopy(actualOutput);
+    /* Output As Expected */
+    cliCallbackTest_getPrintfOutputCopy(actualOutput);
     TEST_ASSERT_EQUAL_STRING(expectedOutput, actualOutput);
     
     /*** Subtest 2: String Without Arguments ***/
@@ -146,8 +218,8 @@ TEST(cli_callback_test, printfCallback)
     /* Printf */
     cliCallback_printfCallback(true, "String Without Arguments\n"); // Flush
     
-    /* Verify Output As Expected */
-    cliCallbackTestHelper_getPrintfOutputCopy(actualOutput);
+    /* Output As Expected */
+    cliCallbackTest_getPrintfOutputCopy(actualOutput);
     TEST_ASSERT_EQUAL_STRING(expectedOutput, actualOutput);
     
     /*** Subtest 3: String With Arguments ***/
@@ -157,8 +229,8 @@ TEST(cli_callback_test, printfCallback)
     /* Printf */
     cliCallback_printfCallback(true, "String %s %0.1f Argume%cts\n", "With", 3.0, 'n'); // Flush
     
-    /* Verify Output As Expected */
-    cliCallbackTestHelper_getPrintfOutputCopy(actualOutput);
+    /* Output As Expected */
+    cliCallbackTest_getPrintfOutputCopy(actualOutput);
     TEST_ASSERT_EQUAL_STRING(expectedOutput, actualOutput);
 }
 

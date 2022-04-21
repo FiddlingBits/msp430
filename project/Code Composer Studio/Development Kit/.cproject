@@ -108,6 +108,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="eclectic/project" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="eclectic/project/demo/build"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="eclectic/project/unit_test/build"/>
 					</sourceEntries>
 				</configuration>

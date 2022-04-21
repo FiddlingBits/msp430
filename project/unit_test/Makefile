@@ -10,6 +10,7 @@
 BUILD_DIRECTORY := ./build
 EXECUTABLE := unit_test.exe
 LIBRARY := unit_test.a
+TEST_RUNS := 1000
 
 ####################################################################################################
 # Defines
@@ -31,6 +32,7 @@ LIBRARY_DEFINES :=   \
 APPLICATION_COMPILER_FLAGS :=        \
   -Weverything                       \
   -Wno-cast-align                    \
+  -Wno-covered-switch-default        \
   -Wno-documentation                 \
   -Wno-documentation-unknown-command \
   -Wno-format-nonliteral             \
@@ -46,14 +48,13 @@ LIBRARY_COMPILER_FLAGS := \
 ####################################################################################################
 
 APPLICATION_INCLUDE_PATHS :=        \
-  -I./test/                         \
-  -I./helper/                       \
   -I./sim/MSP430FR5xx_6xx/          \
   -I./sim/MSP430FR5xx_6xx/inc/      \
+  -I./test/                         \
   -I./unity/                        \
   -I../../app/                      \
   -I../../callback/                 \
-  -I../../driver                    \
+  -I../../driver/                   \
   -I../../eclectic/app/cli/         \
   -I../../eclectic/app/common/      \
   -I../../eclectic/app/ring_buffer/
@@ -71,14 +72,14 @@ LIBRARY_INCLUDE_PATHS :=            \
 
 APPLICATION_SOURCES :=                          \
   ./main.c                                      \
-  ./helper/cli_callback_test_helper.c           \
-  ./helper/test_helper.c                        \
   ./test/cli_callback_test.c                    \
   ./test/cli_command_handler_callback_test.c    \
+  ./test/led_driver_test.c                      \
   ./test/system_test.c                          \
   ../../app/system.c                            \
   ../../callback/cli_callback.c                 \
-  ../../callback/cli_command_handler_callback.c
+  ../../callback/cli_command_handler_callback.c \
+  ../../driver/led_driver.c
 
 LIBRARY_SOURCES :=                                \
   ./sim/MSP430FR5xx_6xx/adc12_b.c                 \
@@ -148,5 +149,10 @@ clean: FORCE
 	@rm -f *.exe.stackdump
 	@rm -f *.o
 	@rm -fr $(BUILD_DIRECTORY)
+
+test: FORCE
+	@printf "Running $(TEST_RUNS) times...\n"
+	@printf "  Failures: "
+	@./$(BUILD_DIRECTORY)/$(EXECUTABLE) -r $(TEST_RUNS) | grep -c '[^0] Failures' || true
 
 FORCE:

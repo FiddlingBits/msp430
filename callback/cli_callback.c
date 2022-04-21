@@ -13,7 +13,6 @@
  * Includes
  ****************************************************************************************************/
 
-/*** Common ***/
 #include "cli.h"
 #include "cli_callback.h"
 #include "driver_config.h"
@@ -21,15 +20,11 @@
 #include "dma.h"
 #include "gpio.h"
 #include "msp430fr5xx_6xxgeneric.h"
+#include "project.h"
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-
-/*** Unit Test ***/
-#ifdef __UNIT_TEST__
-  #include "cli_callback_test_helper.h"
-#endif
 
 /****************************************************************************************************
  * Constants and Variables
@@ -93,12 +88,12 @@ void cliCallback_init(void)
 }
 
 /****************************************************************************************************
- * FUNCT:   cliCallback_interruptHandler
- * BRIEF:   Interrupt Handler
+ * FUNCT:   cliCallback_usciInterruptHandler
+ * BRIEF:   Universal Serial Communications Interface (USCI) Interrupt Handler
  * RETURN:  Returns Nothing
- * ARG:     No Arguments
+ * ARG:     InterruptFlag: Interrupt Flag
  ****************************************************************************************************/
-void cliCallback_interruptHandler(uint16_t InterruptFlag)
+void cliCallback_usciInterruptHandler(uint16_t InterruptFlag)
 {
     /*** Handle Interrupt */
     switch(InterruptFlag)
@@ -177,7 +172,7 @@ void cliCallback_printfCallback(const bool Flush, const char * const Format, ...
 
         /* Unit Test Only */
 #ifdef __UNIT_TEST__
-        cliCallbackTestHelper_copyPrintfOutput(printfString);
+        cliCallbackTest_copyPrintfOutput(printfString);
 #endif
     }
 }
