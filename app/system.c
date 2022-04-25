@@ -17,6 +17,8 @@
 #include "msp430fr6989.h"
 #include "pmm.h"
 #include "project.h"
+#include "random.h"
+#include "random_callback.h"
 #include <stdint.h>
 #include "system.h"
 #include "wdt_a.h"
@@ -89,9 +91,11 @@ static void system_initApplication(void)
     /*** First Stage Initialization: No Dependencies ***/
     cliCallback_init();
     ledDriver_init();
+    randomCallback_init();
 
     /*** Second Stage Initialization: Dependent On First Stage ***/
     (void)cli_init(cliCallback_alertProcessInputCallback, cliCallback_printfCallback);
+    (void)random_init(randomCallback_getRandomUnsigned32BitIntegerCallback);
 
     /*** Third Stage Initialization: Dependent On Second Stage ***/
     cliCommandHandlerCallback_init();

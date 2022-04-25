@@ -11,6 +11,7 @@
 #include "cli_command_handler_callback.h"
 #include "cli_command_handler_callback_test.h"
 #include "hw_memmap.h"
+#include "random_callback.h"
 #include <string.h>
 #include "system.h"
 #include "unity_fixture.h"
@@ -103,6 +104,70 @@ TEST(cli_command_handler_callback_test, ledCommandHandlerCallback)
     }
 }
 
+TEST(cli_command_handler_callback_test, randomCommandHandlerCallback)
+{
+    const char *command, *expectedOutput;
+    char actualOutput[CLI_CALLBACK_TEST_PRINTF_OUTPUT_LENGTH];
+    size_t i;
+    
+    /*** Test Data ***/
+    const cliCommandHandlerCallbackTest_commandTestData_t CommandTestData[] =
+    {        
+        /* Success */
+        {"random -h\n", "usage: random [OPTION]\n  -c[COUNT], --count=[COUNT] (Set Random 32-Bit Integer Count)\n  -h, --help (Help)\n  -s, --seed (Get Seed)\n  -S, --signed (Get Random Signed 32-Bit Integer)\n  -u, --unsigned (Get Random Unsigned 32-Bit Integer)\n[root/]$ "},
+        {"random --help\n", "usage: random [OPTION]\n  -c[COUNT], --count=[COUNT] (Set Random 32-Bit Integer Count)\n  -h, --help (Help)\n  -s, --seed (Get Seed)\n  -S, --signed (Get Random Signed 32-Bit Integer)\n  -u, --unsigned (Get Random Unsigned 32-Bit Integer)\n[root/]$ "},
+        
+        /* Failure */
+        {"random -hme\n", "[root/]$ "},
+        {"random --help=please\n", "[root/]$ "},
+        
+        /*** Seed ***/
+        /* Success */
+        {"random -s\n", "Seed: 0\n[root/]$ "},
+        {"random --seed\n", "Seed: 0\n[root/]$ "},
+        
+        /* Failure */
+        {"random -s5\n", "[root/]$ "},
+        {"random --seed=apple\n", "[root/]$ "},
+        
+        /*** Signed Integer ***/
+        {"random -S\n", "Random Signed 32-Bit Integer(s):\n1: 1741056371\n[root/]$ "},
+        {"random -c3 -S\n", "Random Signed 32-Bit Integer(s):\n1: 1375685356\n2: 701348523\n3: -218373306\n[root/]$ "},
+        {"random --signed\n", "Random Signed 32-Bit Integer(s):\n1: 2093110520\n[root/]$ "},
+        {"random --count=3 --signed\n", "Random Signed 32-Bit Integer(s):\n1: 468248461\n2: 1985621603\n3: 866109850\n[root/]$ "},
+        
+        /*** Unsigned Integer ***/
+        {"random -u\n", "Random Unsigned 32-Bit Integer(s):\n1: 1714556343\n[root/]$ "},
+        {"random -c3 -u\n", "Random Unsigned 32-Bit Integer(s):\n1: 827892570\n2: 626853143\n3: 1491689172\n[root/]$ "},
+        {"random --unsigned\n", "Random Unsigned 32-Bit Integer(s):\n1: 2880622022\n[root/]$ "},
+        {"random --count=3 --unsigned\n", "Random Unsigned 32-Bit Integer(s):\n1: 2612286481\n2: 243430465\n3: 557702279\n[root/]$ "},
+    };
+    size_t CommandTestDataLength = sizeof(CommandTestData) / sizeof(CommandTestData[0]);
+    
+    /********************************************************************************
+     * Test 1: System Command Handler
+     ********************************************************************************/
+    
+    /*** Set Up ***/
+    randomCallback_seed = 0; // Set To Known State, So And Random Values Known
+    randomCallback_init();
+    
+    /*** Subtest 1: Run Tests ***/
+    for(i = 0; i < CommandTestDataLength; i++)
+    {
+        /* Set Up */
+        command = CommandTestData[i].command;
+        expectedOutput = CommandTestData[i].expectedOutput;
+        
+        /* Send Command */
+        cliCallbackTest_sendCommand(command);
+        
+        /* Verify Output As Expected */
+        cliCallbackTest_getPrintfOutputCopy(actualOutput);
+        TEST_ASSERT_EQUAL_STRING(expectedOutput, actualOutput);
+    }
+}
+
 TEST(cli_command_handler_callback_test, systemCommandHandlerCallback)
 {
     const char *command, *expectedOutput;
@@ -168,5 +233,6 @@ TEST(cli_command_handler_callback_test, systemCommandHandlerCallback)
 TEST_GROUP_RUNNER(cli_command_handler_callback_test)
 {
     RUN_TEST_CASE(cli_command_handler_callback_test, ledCommandHandlerCallback)
+    RUN_TEST_CASE(cli_command_handler_callback_test, randomCommandHandlerCallback)
     RUN_TEST_CASE(cli_command_handler_callback_test, systemCommandHandlerCallback)
 }

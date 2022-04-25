@@ -57,6 +57,7 @@ APPLICATION_INCLUDE_PATHS :=        \
   -I../../driver/                   \
   -I../../eclectic/app/cli/         \
   -I../../eclectic/app/common/      \
+  -I../../eclectic/app/random/      \
   -I../../eclectic/app/ring_buffer/
 
 LIBRARY_INCLUDE_PATHS :=            \
@@ -79,6 +80,7 @@ APPLICATION_SOURCES :=                          \
   ../../app/system.c                            \
   ../../callback/cli_callback.c                 \
   ../../callback/cli_command_handler_callback.c \
+  ../../callback/random_callback.c              \
   ../../driver/led_driver.c
 
 LIBRARY_SOURCES :=                                \
@@ -123,6 +125,7 @@ LIBRARY_SOURCES :=                                \
   ./unity/unity_fixture.c                         \
   ../../eclectic/app/cli/cli.c                    \
   ../../eclectic/app/common/status.c              \
+  ../../eclectic/app/random/random.c              \
   ../../eclectic/app/ring_buffer/ring_buffer_u8.c
 
 ####################################################################################################

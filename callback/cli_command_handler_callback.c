@@ -8,6 +8,7 @@
  ****************************************************************************************************/
 
 #define CLI_COMMAND_HANDLER_CALLBACK_LED_COMMAND_NAME    ("led")
+#define CLI_COMMAND_HANDLER_CALLBACK_RANDOM_COMMAND_NAME ("random")
 #define CLI_COMMAND_HANDLER_CALLBACK_SYSTEM_COMMAND_NAME ("system")
 
 /****************************************************************************************************
@@ -19,7 +20,8 @@
 #include "cli_command_handler_callback.h"
 #include "cs.h"
 #include "led_driver.h"
-#include "system.h"
+#include "random.h"
+#include "random_callback.h"
 #include "status.h"
 #include <stdbool.h>
 #include <stddef.h>
@@ -31,6 +33,7 @@
  ****************************************************************************************************/
 
 static cli_record_t cliCommandHandlerCallback_ledCommandRecord;
+static cli_record_t cliCommandHandlerCallback_randomCommandRecord;
 static cli_record_t cliCommandHandlerCallback_systemCommandRecord;
 
 /****************************************************************************************************
@@ -38,6 +41,7 @@ static cli_record_t cliCommandHandlerCallback_systemCommandRecord;
  ****************************************************************************************************/
 
 static status_t cliCommandHandlerCallback_ledCommandHandlerCallback(uint8_t argc, char *argv[]);
+static status_t cliCommandHandlerCallback_randomCommandHandlerCallback(uint8_t argc, char *argv[]);
 static status_t cliCommandHandlerCallback_systemCommandHandlerCallback(uint8_t argc, char *argv[]);
 
 /****************************************************************************************************
@@ -54,6 +58,7 @@ void cliCommandHandlerCallback_init(void)
 {
     /*** Register Commands ***/
     (void)cli_registerCommand(&cliCommandHandlerCallback_ledCommandRecord, CLI_COMMAND_HANDLER_CALLBACK_LED_COMMAND_NAME, cliCommandHandlerCallback_ledCommandHandlerCallback, NULL);
+    (void)cli_registerCommand(&cliCommandHandlerCallback_randomCommandRecord, CLI_COMMAND_HANDLER_CALLBACK_RANDOM_COMMAND_NAME, cliCommandHandlerCallback_randomCommandHandlerCallback, NULL);
     (void)cli_registerCommand(&cliCommandHandlerCallback_systemCommandRecord, CLI_COMMAND_HANDLER_CALLBACK_SYSTEM_COMMAND_NAME, cliCommandHandlerCallback_systemCommandHandlerCallback, NULL);
 }
 
@@ -97,7 +102,7 @@ static status_t cliCommandHandlerCallback_ledCommandHandlerCallback(uint8_t argc
             }
             else if((strcmp(optionArgumentPair.option, "h") == 0) || (strcmp(optionArgumentPair.option, "help") == 0))
             {
-                /* Display Help */
+                /* Help */
                 if(optionArgumentPair.argument == NULL)
                     help = true;
             }
@@ -132,7 +137,7 @@ static status_t cliCommandHandlerCallback_ledCommandHandlerCallback(uint8_t argc
     }
 
     /*** Handle Arguments ***/
-    /* Display Help */
+    /* Help */
     if(help)
     {
         cliCallback_printfCallback(false, "usage: %s [OPTION]\n", CLI_COMMAND_HANDLER_CALLBACK_LED_COMMAND_NAME);
@@ -154,6 +159,118 @@ static status_t cliCommandHandlerCallback_ledCommandHandlerCallback(uint8_t argc
     }
 
     return STATUS_SUCCESS;
+}
+
+/****************************************************************************************************
+ * FUNCT:   cliCommandHandlerCallback_randomCommandHandlerCallback
+ * BRIEF:   Random Command Handler Callback
+ * RETURN:  status_t: Success Or Failure Status
+ * ARG:     argc: Number Of Arguments
+ * ARG:     argv: Argument List
+ ****************************************************************************************************/
+static status_t cliCommandHandlerCallback_randomCommandHandlerCallback(uint8_t argc, char *argv[])
+{
+    bool help, seed, signedInteger, unsignedInteger;
+    uint32_t count, i;
+    cli_optionArgumentPair_t optionArgumentPair;
+
+    /*** Set Defaults ***/
+    count = 1;
+    help = false;
+    seed = false;
+    signedInteger = false;
+    unsignedInteger = false;
+
+    /*** Process Arguments ***/
+    for(i = 0; i < argc; i++)
+    {
+        if(cli_getOptionArgumentPairFromInput(argv[i], &optionArgumentPair) == STATUS_SUCCESS)
+        {
+            if((strcmp(optionArgumentPair.option, "c") == 0) || (strcmp(optionArgumentPair.option, "count") == 0))
+            {
+                /* Set Random 32-Bit Integer Count */
+                if(optionArgumentPair.argument != NULL)
+                    (void)cli_getUnsigned32BitIntegerFromInput(optionArgumentPair.argument, &count);
+            }
+            else if((strcmp(optionArgumentPair.option, "h") == 0) || (strcmp(optionArgumentPair.option, "help") == 0))
+            {
+                /* Help */
+                if(optionArgumentPair.argument == NULL)
+                    help = true;
+            }
+            else if((strcmp(optionArgumentPair.option, "s") == 0) || (strcmp(optionArgumentPair.option, "seed") == 0))
+            {
+                /* Seed */
+                if(optionArgumentPair.argument == NULL)
+                    seed = true;
+            }
+            else if((strcmp(optionArgumentPair.option, "S") == 0) || (strcmp(optionArgumentPair.option, "signed") == 0))
+            {
+                /* Random Signed 32-Bit Integer */
+                if(optionArgumentPair.argument == NULL)
+                    signedInteger = true;
+            }
+            else if((strcmp(optionArgumentPair.option, "u") == 0) || (strcmp(optionArgumentPair.option, "unsigned") == 0))
+            {
+                /* Random Unsigned 32-Bit Integer */
+                if(optionArgumentPair.argument == NULL)
+                    unsignedInteger = true;
+            }
+        }
+    }
+
+    /*** Handle Arguments ***/
+    /* Help */
+    if(help)
+    {
+        cliCallback_printfCallback(false, "usage: %s [OPTION]\n", CLI_COMMAND_HANDLER_CALLBACK_RANDOM_COMMAND_NAME);
+        cliCallback_printfCallback(false, "  -c[COUNT], --count=[COUNT] (Set Random 32-Bit Integer Count)\n");
+        cliCallback_printfCallback(false, "  -h, --help (Help)\n");
+        cliCallback_printfCallback(false, "  -s, --seed (Get Seed)\n");
+        cliCallback_printfCallback(false, "  -S, --signed (Get Random Signed 32-Bit Integer)\n");
+        cliCallback_printfCallback(true, "  -u, --unsigned (Get Random Unsigned 32-Bit Integer)\n"); // Flush
+    }
+
+    /* Seed */
+    if(seed)
+    	cliCallback_printfCallback(true, "Seed: %u\n", randomCallback_getSeed()); // Flush
+
+    /* Random Signed 32-Bit Integer */
+    if(signedInteger)
+    {
+        cliCallback_printfCallback(false, "Random Signed 32-Bit Integer(s):\n");
+        for(i = 0; i < count; i++)
+        {
+#ifdef __UNIT_TEST__
+        	if(((i + 1) % 10) == 0)
+        		cliCallback_printfCallback(true, "%u: %d\n", i + 1, random_getRandomSigned32BitInteger()); // Flush
+        	else
+        		cliCallback_printfCallback(false, "%u: %d\n", i + 1, random_getRandomSigned32BitInteger());
+#else
+        	if(((i + 1) % 10) == 0)
+        		cliCallback_printfCallback(true, "%lu: %ld\n", i + 1, random_getRandomSigned32BitInteger()); // Flush
+        	else
+        		cliCallback_printfCallback(false, "%lu: %ld\n", i + 1, random_getRandomSigned32BitInteger());
+#endif
+        }
+        cliCallback_printfCallback(true, ""); // Flush
+    }
+
+    /* Random Unsigned 32-Bit Integer */
+    if(unsignedInteger)
+    {
+        cliCallback_printfCallback(false, "Random Unsigned 32-Bit Integer(s):\n");
+        for(i = 0; i < count; i++)
+        {
+        	if(((i + 1) % 10) == 0)
+        		cliCallback_printfCallback(true, "%lu: %lu\n", i + 1, random_getRandomUnsigned32BitInteger()); // Flush
+        	else
+        		cliCallback_printfCallback(false, "%lu: %lu\n", i + 1, random_getRandomUnsigned32BitInteger());
+        }
+        cliCallback_printfCallback(true, ""); // Flush
+    }
+
+	return STATUS_SUCCESS;
 }
 
 /****************************************************************************************************

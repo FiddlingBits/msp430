@@ -60,9 +60,7 @@ void TLV_getInfo(uint8_t tag,
 
 uint16_t TLV_getDeviceType()
 {
-    uint16_t *pDeviceType = (uint16_t *)TLV_DEVICE_ID_0;
-    // Return Value from TLV Table
-    return pDeviceType[0];
+    return 0;
 }
 
 uint16_t TLV_getMemory(uint8_t instance)

@@ -1,31 +1,23 @@
 /****************************************************************************************************
- * FILE:    project.h
- * BRIEF:   Project Header File
+ * FILE:    random_callback.h
+ * BRIEF:   Random Callback Header File
  ****************************************************************************************************/
 
-#ifndef PROJECT_H
-#define PROJECT_H
-
-/****************************************************************************************************
- * Defines
- ****************************************************************************************************/
-
-#ifdef __UNIT_TEST__
-  #define PROJECT_INFINITE_LOOP while(0)
-  #define PROJECT_STATIC
-#else
-  #define PROJECT_INFINITE_LOOP while(1)
-  #define PROJECT_STATIC        static
-#endif
+#ifndef RANDOM_CALLBACK_H
+#define RANDOM_CALLBACK_H
 
 /****************************************************************************************************
  * Includes
  ****************************************************************************************************/
 
-#ifdef __UNIT_TEST__
-  #include "cli_callback_test.h"
-  #include "cli_command_handler_callback_test.h"
-  #include "led_driver_test.h"
-#endif
+#include <stdint.h>
+
+/****************************************************************************************************
+ * Function Prototypes
+ ****************************************************************************************************/
+
+extern uint32_t randomCallback_getRandomUnsigned32BitIntegerCallback(void);
+extern uint16_t randomCallback_getSeed(void);
+extern void randomCallback_init(void);
 
 #endif

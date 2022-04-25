@@ -152,28 +152,31 @@ void cliCallback_printfCallback(const bool Flush, const char * const Format, ...
     /*** Flush ***/
     if(Flush)
     {
-        /* Initialize DMA */
-        dmaInit.channelSelect = DRIVER_CONFIG_CLI_DMA_CHANNEL;
-        dmaInit.transferModeSelect = DMA_TRANSFER_BLOCK;
-        dmaInit.transferSize = (uint16_t)strlen(printfString);
-        dmaInit.triggerSourceSelect = DRIVER_CONFIG_CLI_DMA_TRIGGER_SOURCE;
-        dmaInit.transferUnitSelect = DMA_SIZE_SRCBYTE_DSTBYTE;
-        dmaInit.triggerTypeSelect = DMA_TRIGGER_HIGH;
-        DMA_init(&dmaInit);
+    	if(strlen(printfString) > 0)
+    	{
+			/* Initialize DMA */
+			dmaInit.channelSelect = DRIVER_CONFIG_CLI_DMA_CHANNEL;
+			dmaInit.transferModeSelect = DMA_TRANSFER_BLOCK;
+			dmaInit.transferSize = (uint16_t)strlen(printfString);
+			dmaInit.triggerSourceSelect = DRIVER_CONFIG_CLI_DMA_TRIGGER_SOURCE;
+			dmaInit.transferUnitSelect = DMA_SIZE_SRCBYTE_DSTBYTE;
+			dmaInit.triggerTypeSelect = DMA_TRIGGER_HIGH;
+			DMA_init(&dmaInit);
 
-        /* Set DMA Addresses And Start Transfer */
-        DMA_setSrcAddress(DRIVER_CONFIG_CLI_DMA_CHANNEL, (uint32_t)printfString, DMA_DIRECTION_INCREMENT);
-        DMA_setDstAddress(DRIVER_CONFIG_CLI_DMA_CHANNEL, EUSCI_A_UART_getTransmitBufferAddress(DRIVER_CONFIG_CLI_UART_BASE_ADDRESS), DMA_DIRECTION_UNCHANGED);
-        DMA_enableTransfers(DRIVER_CONFIG_CLI_DMA_CHANNEL);
-        DMA_startTransfer(DRIVER_CONFIG_CLI_DMA_CHANNEL); // DMA Is Disabled After Completion Of Block Transfer
+			/* Set DMA Addresses And Start Transfer */
+			DMA_setSrcAddress(DRIVER_CONFIG_CLI_DMA_CHANNEL, (uint32_t)printfString, DMA_DIRECTION_INCREMENT);
+			DMA_setDstAddress(DRIVER_CONFIG_CLI_DMA_CHANNEL, EUSCI_A_UART_getTransmitBufferAddress(DRIVER_CONFIG_CLI_UART_BASE_ADDRESS), DMA_DIRECTION_UNCHANGED);
+			DMA_enableTransfers(DRIVER_CONFIG_CLI_DMA_CHANNEL);
+			DMA_startTransfer(DRIVER_CONFIG_CLI_DMA_CHANNEL); // DMA Is Disabled After Completion Of Block Transfer
+
+        	/* Unit Test Only */
+#ifdef __UNIT_TEST__
+        	cliCallbackTest_copyPrintfOutput(printfString);
+#endif
+    	}
 
         /* Reset Index */
         i = 0;
-
-        /* Unit Test Only */
-#ifdef __UNIT_TEST__
-        cliCallbackTest_copyPrintfOutput(printfString);
-#endif
     }
 }
 
