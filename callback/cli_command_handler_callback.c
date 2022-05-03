@@ -75,7 +75,7 @@ void cliCommandHandlerCallback_init(void)
  ****************************************************************************************************/
 static status_t cliCommandHandlerCallback_ledCommandHandlerCallback(uint8_t argc, char *argv[])
 {
-    bool help, enableBlink;
+    bool help;
     uint8_t i;
     uint16_t onMilliseconds, offMilliseconds;
     uint32_t u32;
@@ -84,8 +84,7 @@ static status_t cliCommandHandlerCallback_ledCommandHandlerCallback(uint8_t argc
 
     /*** Set Defaults ***/
     help = false;
-    enableBlink = false;
-    led = LED_DRIVER_LED_COUNT; // Invalid
+    led = (ledDriver_led_t)~0; // Invalid
     onMilliseconds = (uint16_t)~0; // Invalid
     offMilliseconds = (uint16_t)~0; // Invalid
 
@@ -94,13 +93,7 @@ static status_t cliCommandHandlerCallback_ledCommandHandlerCallback(uint8_t argc
     {
         if(cli_getOptionArgumentPairFromInput(argv[i], &optionArgumentPair) == STATUS_SUCCESS)
         {
-            if((strcmp(optionArgumentPair.option, "e") == 0) || (strcmp(optionArgumentPair.option, "enable") == 0))
-            {
-                /* Enable Blink */
-                if(optionArgumentPair.argument == NULL)
-                    enableBlink = true;
-            }
-            else if((strcmp(optionArgumentPair.option, "h") == 0) || (strcmp(optionArgumentPair.option, "help") == 0))
+            if((strcmp(optionArgumentPair.option, "h") == 0) || (strcmp(optionArgumentPair.option, "help") == 0))
             {
                 /* Help */
                 if(optionArgumentPair.argument == NULL)
@@ -141,7 +134,6 @@ static status_t cliCommandHandlerCallback_ledCommandHandlerCallback(uint8_t argc
     if(help)
     {
         cliCallback_printfCallback(false, "usage: %s [OPTION]\n", CLI_COMMAND_HANDLER_CALLBACK_LED_COMMAND_NAME);
-        cliCallback_printfCallback(false, "  -e, --enable (Enable Blink)\n");
         cliCallback_printfCallback(false, "  -h, --help (Help)\n");
         cliCallback_printfCallback(false, "  -l, --led (LED)\n");
         cliCallback_printfCallback(false, "  -o, --on (On Milliseconds)\n");
@@ -149,7 +141,7 @@ static status_t cliCommandHandlerCallback_ledCommandHandlerCallback(uint8_t argc
     }
 
     /* Enable Blink */
-    if(enableBlink)
+    if((led != (ledDriver_led_t)~0) && (onMilliseconds != (uint16_t)~0) && (offMilliseconds != (uint16_t)~0))
     {
     	cliCallback_printfCallback(false, "Enable Blink: ");
         if(ledDriver_enableBlink(led, onMilliseconds, offMilliseconds))

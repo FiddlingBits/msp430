@@ -16,6 +16,6 @@
  * Constants And Variables
  ****************************************************************************************************/
 
-extern ledDriver_ledBlink_t ledDriver_ledBlink[LED_DRIVER_LED_COUNT];
+extern volatile ledDriver_ledBlink_t ledDriver_ledBlink[LED_DRIVER_LED_COUNT];
 
 #endif

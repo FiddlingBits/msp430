@@ -20,6 +20,13 @@
  * Defines
  ****************************************************************************************************/
 
+/*** Button ***/
+/* GPIO */
+#define DRIVER_CONFIG_BUTTON_GPIO_BUTTON_1_PORT (GPIO_PORT_P1)
+#define DRIVER_CONFIG_BUTTON_GPIO_BUTTON_1_PIN  (GPIO_PIN1)
+#define DRIVER_CONFIG_BUTTON_GPIO_BUTTON_2_PORT (GPIO_PORT_P1)
+#define DRIVER_CONFIG_BUTTON_GPIO_BUTTON_2_PIN  (GPIO_PIN2)
+
 /*** Command Line Interface (CLI) ***/
 /* DMA */
 #define DRIVER_CONFIG_CLI_DMA_CHANNEL        (DMA_CHANNEL_0)

@@ -32,6 +32,7 @@ typedef enum ledDriver_led_e
 
 typedef struct ledDriver_ledBlink_s
 {
+	bool enabled;
     bool on;
     uint16_t onMilliseconds;
     uint16_t offMilliseconds;
@@ -43,6 +44,8 @@ typedef struct ledDriver_ledBlink_s
 
 extern bool ledDriver_enableBlink(const ledDriver_led_t Led, const uint16_t OnMilliseconds, const uint16_t OffMilliseconds);
 extern void ledDriver_init(void);
+extern bool ledDriver_isEnabled(const ledDriver_led_t Led);
+extern void ledDriver_setState(const ledDriver_led_t Led, const bool On);
 extern void ledDriver_timerInterruptHandler(uint16_t InterruptFlag);
 
 #endif

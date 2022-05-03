@@ -62,21 +62,17 @@ TEST(cli_command_handler_callback_test, ledCommandHandlerCallback)
         {"led --enable --led=1 --on=1500 --off=1250\n", "Enable Blink: SUCCESS\n[root/]$ "},
         
         /* Failure */
-        {"led -enow -l0 -o500 -O250\n", "[root/]$ "},
-        {"led -e -l2 -o500 -O250\n", "Enable Blink: FAILURE\n[root/]$ "},
-        {"led -e -l0 -o2001 -O250\n", "Enable Blink: FAILURE\n[root/]$ "},
-        {"led -e -l0 -o500 -O2001\n", "Enable Blink: FAILURE\n[root/]$ "},
-        {"led -e -l0 -o0 -O0\n", "Enable Blink: FAILURE\n[root/]$ "},
-        {"led --enable=please --led=0 --on=500 --off=250\n", "[root/]$ "},
-        {"led --enable --led=2 --on=500 --off=250\n", "Enable Blink: FAILURE\n[root/]$ "},
-        {"led --enable --led=0 --on=2001 --off=250\n", "Enable Blink: FAILURE\n[root/]$ "},
-        {"led --enable --led=0 --on=500 --off=2001\n", "Enable Blink: FAILURE\n[root/]$ "},
-        {"led --enable --led=0 --on=0 --off=0\n", "Enable Blink: FAILURE\n[root/]$ "},
+        {"led -l2 -o500 -O250\n", "Enable Blink: FAILURE\n[root/]$ "},
+        {"led -l0 -o2001 -O250\n", "Enable Blink: FAILURE\n[root/]$ "},
+        {"led -l0 -o500 -O2001\n", "Enable Blink: FAILURE\n[root/]$ "},
+        {"led --led=2 --on=500 --off=250\n", "Enable Blink: FAILURE\n[root/]$ "},
+        {"led --led=0 --on=2001 --off=250\n", "Enable Blink: FAILURE\n[root/]$ "},
+        {"led --led=0 --on=500 --off=2001\n", "Enable Blink: FAILURE\n[root/]$ "},
         
         /*** Help ***/
         /* Success */
-        {"led -h\n", "usage: led [OPTION]\n  -e, --enable (Enable Blink)\n  -h, --help (Help)\n  -l, --led (LED)\n  -o, --on (On Milliseconds)\n  -O, --off (Off Milliseconds)\n[root/]$ "},
-        {"led --help\n", "usage: led [OPTION]\n  -e, --enable (Enable Blink)\n  -h, --help (Help)\n  -l, --led (LED)\n  -o, --on (On Milliseconds)\n  -O, --off (Off Milliseconds)\n[root/]$ "},
+        {"led -h\n", "usage: led [OPTION]\n  -h, --help (Help)\n  -l, --led (LED)\n  -o, --on (On Milliseconds)\n  -O, --off (Off Milliseconds)\n[root/]$ "},
+        {"led --help\n", "usage: led [OPTION]\n  -h, --help (Help)\n  -l, --led (LED)\n  -o, --on (On Milliseconds)\n  -O, --off (Off Milliseconds)\n[root/]$ "},
         
         /* Failure */
         {"led -hme\n", "[root/]$ "},

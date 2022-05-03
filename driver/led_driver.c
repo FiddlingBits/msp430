@@ -20,13 +20,13 @@
  * Constants And Variables
  ****************************************************************************************************/
 
-PROJECT_STATIC ledDriver_ledBlink_t ledDriver_ledBlink[LED_DRIVER_LED_COUNT];
+PROJECT_STATIC volatile ledDriver_ledBlink_t ledDriver_ledBlink[LED_DRIVER_LED_COUNT];
 
 /****************************************************************************************************
  * Function Prototypes
  ****************************************************************************************************/
 
-static void ledDriver_setState(const ledDriver_led_t Led, const bool On);
+static void ledDriver_resetLedBlink(const ledDriver_led_t Led);
 
 /****************************************************************************************************
  * Function Definitions (Public)
@@ -41,8 +41,9 @@ static void ledDriver_setState(const ledDriver_led_t Led, const bool On);
  * ARG:     OffMilliseconds: Off Milliseconds
  * NOTE:    On And Off Milliseconds Must Be No Greater Than 2000 Milliseconds; Timer Clock Is 32768
  *          Hz (ACLK) / 1 = 32768 Hz; It Rolls Over At 65535 To 0, Every 2000 Milliseconds
- * NOTE:    LED Solid On/Blink Disabled If On Milliseconds 0
  * NOTE:    A Non-Zero On Milliseconds And A Zero Off Milliseconds Will Result In Solid On LED
+ * NOTE:    A Zero On Milliseconds And A Non-Zero Off Milliseconds Will Result In Solid Off LED
+ * NOTE:	A Zero On And Off Milliseconds Will Disable Blink
  ****************************************************************************************************/
 bool ledDriver_enableBlink(const ledDriver_led_t Led, const uint16_t OnMilliseconds, const uint16_t OffMilliseconds)
 {
@@ -50,7 +51,7 @@ bool ledDriver_enableBlink(const ledDriver_led_t Led, const uint16_t OnMilliseco
     Timer_A_initCompareModeParam initCompareModeParam;
 
     /*** Error Check ***/
-    if((Led >= LED_DRIVER_LED_COUNT) || ((OnMilliseconds == 0) && (OffMilliseconds == 0)) || (OnMilliseconds > 2000) || (OffMilliseconds > 2000))
+    if((OnMilliseconds > 2000) || (OffMilliseconds > 2000))
         return false;
 
     /*** Enable Blink ***/
@@ -65,28 +66,34 @@ bool ledDriver_enableBlink(const ledDriver_led_t Led, const uint16_t OnMilliseco
             break;
         case LED_DRIVER_LED_COUNT:
         default:
-            /* Do Nothing (Shouldn't Get Here; Should Be Caught In Error Check) */
-        	break;
+        	/* Error */
+            return false;
     }
 
     /* Clear And Disable Capture/Compare Interrupt */
     Timer_A_clearCaptureCompareInterrupt(DRIVER_CONFIG_LED_TIMER, captureCompareRegister);
     Timer_A_disableCaptureCompareInterrupt(DRIVER_CONFIG_LED_TIMER, captureCompareRegister);
 
+    /* Reset Blink */
+    ledDriver_resetLedBlink(Led);
+
     /* Enable Blink */
     if((OnMilliseconds > 0) && (OffMilliseconds == 0))
     {
         /* Solid On */
+    	ledDriver_ledBlink[Led].enabled = true;
         ledDriver_setState(Led, true);
     }
     else if((OnMilliseconds == 0) && (OffMilliseconds > 0))
     {
         /* Solid Off */
+    	ledDriver_ledBlink[Led].enabled = true;
         ledDriver_setState(Led, false);
     }
-    else // ((OnMilliseconds > 0) && (OffMilliseconds > 0))
+    else if((OnMilliseconds > 0) && (OffMilliseconds > 0))
     {
-        /* Remember Blink Settings And Pre-Set LED State To On */
+        /* Blink Settings And Pre-Set LED State To On */
+    	ledDriver_ledBlink[Led].enabled = true;
         ledDriver_ledBlink[Led].on = true;
         ledDriver_ledBlink[Led].onMilliseconds = OnMilliseconds;
         ledDriver_ledBlink[Led].offMilliseconds = OffMilliseconds;
@@ -133,13 +140,68 @@ void ledDriver_init(void)
     initContinuousModeParam.startTimer = true;
     Timer_A_initContinuousMode(DRIVER_CONFIG_LED_TIMER, &initContinuousModeParam);
 
-    /* Initial LED States To Off */
+    /* Reset Blink And Set Initial LED States To Off */
     for(i = 0; i < LED_DRIVER_LED_COUNT; i++)
     {
-        ledDriver_ledBlink[i].on = false;
-        ledDriver_ledBlink[i].onMilliseconds = 0;
-        ledDriver_ledBlink[i].offMilliseconds = 0;
+    	ledDriver_resetLedBlink((ledDriver_led_t)i);
         ledDriver_setState((ledDriver_led_t)i, false);
+    }
+}
+
+/****************************************************************************************************
+ * FUNCT:   ledDriver_isEnabled
+ * BRIEF:   Is Enabled
+ * RETURN:  bool: Enabled (true) Or Not Enabled (false)
+ * ARG:     Led: LED
+ ****************************************************************************************************/
+bool ledDriver_isEnabled(const ledDriver_led_t Led)
+{
+	bool enabled;
+
+	/*** Is Enabled ***/
+    switch(Led)
+    {
+        case LED_DRIVER_LED_1:
+        case LED_DRIVER_LED_2:
+        	enabled = ledDriver_ledBlink[Led].enabled;
+            break;
+        case LED_DRIVER_LED_COUNT:
+        default:
+            enabled = false;
+            break;
+    }
+
+	return enabled;
+}
+
+/****************************************************************************************************
+ * FUNCT:   ledDriver_setState
+ * BRIEF:   Set State
+ * RETURN:  Returns Nothing
+ * ARG:     Led: LED
+ * ARG:     On: On (true) Or Off (false)
+ ****************************************************************************************************/
+void ledDriver_setState(const ledDriver_led_t Led, const bool On)
+{
+    /*** Set State ***/
+    switch(Led)
+    {
+        case LED_DRIVER_LED_1:
+            if(On)
+                GPIO_setOutputHighOnPin(DRIVER_CONFIG_LED_GPIO_LED_1_PORT, DRIVER_CONFIG_LED_GPIO_LED_1_PIN);
+            else
+                GPIO_setOutputLowOnPin(DRIVER_CONFIG_LED_GPIO_LED_1_PORT, DRIVER_CONFIG_LED_GPIO_LED_1_PIN);
+            break;
+        case LED_DRIVER_LED_2:
+            if(On)
+                GPIO_setOutputHighOnPin(DRIVER_CONFIG_LED_GPIO_LED_2_PORT, DRIVER_CONFIG_LED_GPIO_LED_2_PIN);
+            else
+                GPIO_setOutputLowOnPin(DRIVER_CONFIG_LED_GPIO_LED_2_PORT, DRIVER_CONFIG_LED_GPIO_LED_2_PIN);
+            break;
+        case LED_DRIVER_LED_COUNT:
+        default:
+            /* Do Nothing */
+            break;
     }
 }
 
@@ -202,32 +264,26 @@ void ledDriver_timerInterruptHandler(uint16_t InterruptFlag)
  ****************************************************************************************************/
 
 /****************************************************************************************************
- * FUNCT:   ledDriver_setState
- * BRIEF:   Set State
+ * FUNCT:   ledDriver_resetLedBlink
+ * BRIEF:   Reset LED Blink
  * RETURN:  Returns Nothing
  * ARG:     Led: LED
- * ARG:     On: On (true) Or Off (false)
  ****************************************************************************************************/
-static void ledDriver_setState(const ledDriver_led_t Led, const bool On)
+static void ledDriver_resetLedBlink(const ledDriver_led_t Led)
 {
-    /*** Set State ***/
+	/*** Reset LED Blink ***/
     switch(Led)
     {
         case LED_DRIVER_LED_1:
-            if(On)
-                GPIO_setOutputHighOnPin(DRIVER_CONFIG_LED_GPIO_LED_1_PORT, DRIVER_CONFIG_LED_GPIO_LED_1_PIN);
-            else
-                GPIO_setOutputLowOnPin(DRIVER_CONFIG_LED_GPIO_LED_1_PORT, DRIVER_CONFIG_LED_GPIO_LED_1_PIN);
-            break;
         case LED_DRIVER_LED_2:
-            if(On)
-                GPIO_setOutputHighOnPin(DRIVER_CONFIG_LED_GPIO_LED_2_PORT, DRIVER_CONFIG_LED_GPIO_LED_2_PIN);
-            else
-                GPIO_setOutputLowOnPin(DRIVER_CONFIG_LED_GPIO_LED_2_PORT, DRIVER_CONFIG_LED_GPIO_LED_2_PIN);
+        	ledDriver_ledBlink[Led].enabled = false;
+            ledDriver_ledBlink[Led].on = false;
+            ledDriver_ledBlink[Led].onMilliseconds = 0;
+            ledDriver_ledBlink[Led].offMilliseconds = 0;
             break;
         case LED_DRIVER_LED_COUNT:
         default:
             /* Do Nothing */
-            break;
+        	break;
     }
 }

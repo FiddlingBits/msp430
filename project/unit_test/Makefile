@@ -10,7 +10,7 @@
 BUILD_DIRECTORY := ./build
 EXECUTABLE := unit_test.exe
 LIBRARY := unit_test.a
-TEST_RUNS := 1000
+TEST_RUNS := 10000
 
 ####################################################################################################
 # Defines
@@ -73,6 +73,7 @@ LIBRARY_INCLUDE_PATHS :=            \
 
 APPLICATION_SOURCES :=                          \
   ./main.c                                      \
+  ./test/button_driver_test.c                   \
   ./test/cli_callback_test.c                    \
   ./test/cli_command_handler_callback_test.c    \
   ./test/led_driver_test.c                      \
@@ -81,6 +82,7 @@ APPLICATION_SOURCES :=                          \
   ../../callback/cli_callback.c                 \
   ../../callback/cli_command_handler_callback.c \
   ../../callback/random_callback.c              \
+  ../../driver/button_driver.c                  \
   ../../driver/led_driver.c
 
 LIBRARY_SOURCES :=                                \

@@ -10,6 +10,8 @@
  * Function Prototypes
  ****************************************************************************************************/
 
+extern __interrupt void interruptHandler_port1Vector(void);
+extern __interrupt void interruptHandler_timer0A1Vector(void);
 extern __interrupt void interruptHandler_usciA1Vector(void);
 
 #endif

@@ -7,6 +7,7 @@
  * Includes
  ****************************************************************************************************/
 
+#include "button_driver.h"
 #include "cli_callback.h"
 #include "interrupt_handler.h"
 #include "intrinsics.h"
@@ -16,6 +17,12 @@
 /****************************************************************************************************
  * Function Definitions (Public)
  ****************************************************************************************************/
+
+#pragma vector=PORT1_VECTOR
+__interrupt void interruptHandler_port1Vector(void)
+{
+	buttonDriver_portInterruptHandler(__even_in_range(P1IV, P1IV_P1IFG7));
+}
 
 /****************************************************************************************************
  * FUNCT:   interruptHandler_timer0A1Vector

@@ -7,6 +7,7 @@
  * Includes
  ****************************************************************************************************/
 
+#include "button_driver.h"
 #include "cli.h"
 #include "cli_callback.h"
 #include "cli_command_handler_callback.h"
@@ -89,6 +90,7 @@ void system_reset(void)
 static void system_initApplication(void)
 {
     /*** First Stage Initialization: No Dependencies ***/
+    buttonDriver_init();
     cliCallback_init();
     ledDriver_init();
     randomCallback_init();

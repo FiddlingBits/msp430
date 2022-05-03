@@ -1,37 +1,30 @@
 /****************************************************************************************************
- * FILE:    main.c
- * BRIEF:   Main Source File
+ * FILE:    button_driver.h
+ * BRIEF:   Button Driver Header File
  ****************************************************************************************************/
+
+#ifndef BUTTON_DRIVER_H
+#define BUTTON_DRIVER_H
+
+/****************************************************************************************************
+ * Defines
+ ****************************************************************************************************/
+
+#define BUTTON_DRIVER_BUTTON_1 (0x01)
+#define BUTTON_DRIVER_BUTTON_2 (0x02)
 
 /****************************************************************************************************
  * Includes
  ****************************************************************************************************/
 
-#include "button_driver.h"
-#include "cli_callback.h"
-#include "system.h"
+#include <stdint.h>
 
 /****************************************************************************************************
- * Function Definitions (Public)
+ * Function Prototypes
  ****************************************************************************************************/
 
-/****************************************************************************************************
- * FUNCT:   main
- * BRIEF:   Main Entry
- * RETURN:  Returns Nothing
- * ARG:     No Arguments
- * NOTE:    Does Not Return
- ****************************************************************************************************/
-void main(void)
-{
-    /*** Initialize System ***/
-    system_init();
+extern void buttonDriver_init(void);
+extern void buttonDriver_portInterruptHandler(uint16_t InterruptFlag);
+extern void buttonDriver_tick(void);
 
-    /*** Infinite Loop ***/
-    while(1)
-    {
-        /*** Tick ***/
-    	buttonDriver_tick();
-        cliCallback_tick();
-    }
-}
+#endif
