@@ -7,6 +7,7 @@
  * Defines
  ****************************************************************************************************/
 
+#define CLI_COMMAND_HANDLER_CALLBACK_LCD_COMMAND_NAME    ("lcd")
 #define CLI_COMMAND_HANDLER_CALLBACK_LED_COMMAND_NAME    ("led")
 #define CLI_COMMAND_HANDLER_CALLBACK_RANDOM_COMMAND_NAME ("random")
 #define CLI_COMMAND_HANDLER_CALLBACK_SYSTEM_COMMAND_NAME ("system")
@@ -19,12 +20,15 @@
 #include "cli_callback.h"
 #include "cli_command_handler_callback.h"
 #include "cs.h"
+#include "lcd_c.h"
+#include "lcd_driver.h"
 #include "led_driver.h"
 #include "random.h"
 #include "random_callback.h"
 #include "status.h"
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 #include "system.h"
 
@@ -32,6 +36,7 @@
  * Constants and Variables
  ****************************************************************************************************/
 
+static cli_record_t cliCommandHandlerCallback_lcdCommandRecord;
 static cli_record_t cliCommandHandlerCallback_ledCommandRecord;
 static cli_record_t cliCommandHandlerCallback_randomCommandRecord;
 static cli_record_t cliCommandHandlerCallback_systemCommandRecord;
@@ -40,6 +45,7 @@ static cli_record_t cliCommandHandlerCallback_systemCommandRecord;
  * Function Prototypes
  ****************************************************************************************************/
 
+static status_t cliCommandHandlerCallback_lcdCommandHandlerCallback(uint8_t argc, char *argv[]);
 static status_t cliCommandHandlerCallback_ledCommandHandlerCallback(uint8_t argc, char *argv[]);
 static status_t cliCommandHandlerCallback_randomCommandHandlerCallback(uint8_t argc, char *argv[]);
 static status_t cliCommandHandlerCallback_systemCommandHandlerCallback(uint8_t argc, char *argv[]);
@@ -57,6 +63,7 @@ static status_t cliCommandHandlerCallback_systemCommandHandlerCallback(uint8_t a
 void cliCommandHandlerCallback_init(void)
 {
     /*** Register Commands ***/
+    (void)cli_registerCommand(&cliCommandHandlerCallback_lcdCommandRecord, CLI_COMMAND_HANDLER_CALLBACK_LCD_COMMAND_NAME, cliCommandHandlerCallback_lcdCommandHandlerCallback, NULL);
     (void)cli_registerCommand(&cliCommandHandlerCallback_ledCommandRecord, CLI_COMMAND_HANDLER_CALLBACK_LED_COMMAND_NAME, cliCommandHandlerCallback_ledCommandHandlerCallback, NULL);
     (void)cli_registerCommand(&cliCommandHandlerCallback_randomCommandRecord, CLI_COMMAND_HANDLER_CALLBACK_RANDOM_COMMAND_NAME, cliCommandHandlerCallback_randomCommandHandlerCallback, NULL);
     (void)cli_registerCommand(&cliCommandHandlerCallback_systemCommandRecord, CLI_COMMAND_HANDLER_CALLBACK_SYSTEM_COMMAND_NAME, cliCommandHandlerCallback_systemCommandHandlerCallback, NULL);
@@ -65,6 +72,114 @@ void cliCommandHandlerCallback_init(void)
 /****************************************************************************************************
  * Function Definitions (Private)
  ****************************************************************************************************/
+
+/****************************************************************************************************
+ * FUNCT:   cliCommandHandlerCallback_lcdCommandHandlerCallback
+ * BRIEF:   LCD Command Handler Callback
+ * RETURN:  status_t: Success Or Failure Status
+ * ARG:     argc: Number Of Arguments
+ * ARG:     argv: Argument List
+ ****************************************************************************************************/
+static status_t cliCommandHandlerCallback_lcdCommandHandlerCallback(uint8_t argc, char *argv[])
+{
+    bool all, blink, clear, help;
+    uint8_t i, segment, value;
+    uint32_t u32;
+    cli_optionArgumentPair_t optionArgumentPair;
+
+    /*** Set Defaults ***/
+    all = false;
+    blink = false;
+    clear = false;
+    help = false;
+    segment = (uint8_t)~0; // Invalid
+    value = (uint8_t)~0; // Invalid
+
+    /*** Process Arguments ***/
+    for(i = 0; i < argc; i++)
+    {
+        if(cli_getOptionArgumentPairFromInput(argv[i], &optionArgumentPair) == STATUS_SUCCESS)
+        {
+            if((strcmp(optionArgumentPair.option, "a") == 0) || (strcmp(optionArgumentPair.option, "all") == 0))
+            {
+                /* All */
+                if(optionArgumentPair.argument == NULL)
+                    all = true;
+            }
+        	else if((strcmp(optionArgumentPair.option, "b") == 0) || (strcmp(optionArgumentPair.option, "blink") == 0))
+            {
+                /* Blink */
+                if(optionArgumentPair.argument == NULL)
+                    blink = true;
+            }
+        	else if((strcmp(optionArgumentPair.option, "c") == 0) || (strcmp(optionArgumentPair.option, "clear") == 0))
+            {
+                /* Clear */
+                if(optionArgumentPair.argument == NULL)
+                    clear = true;
+            }
+            else if((strcmp(optionArgumentPair.option, "h") == 0) || (strcmp(optionArgumentPair.option, "help") == 0))
+            {
+                /* Help */
+                if(optionArgumentPair.argument == NULL)
+                    help = true;
+            }
+            else if((strcmp(optionArgumentPair.option, "s") == 0) || (strcmp(optionArgumentPair.option, "segment") == 0))
+            {
+                /* Segment */
+                if(optionArgumentPair.argument != NULL)
+                {
+                    (void)cli_getUnsigned32BitIntegerFromInput(optionArgumentPair.argument, &u32);
+                    segment = (uint8_t)u32;
+                }
+            }
+            else if((strcmp(optionArgumentPair.option, "v") == 0) || (strcmp(optionArgumentPair.option, "value") == 0))
+            {
+                /* Value */
+                if(optionArgumentPair.argument != NULL)
+                {
+                    (void)cli_getUnsigned32BitIntegerFromInput(optionArgumentPair.argument, &u32);
+                    value = (uint8_t)u32;
+                }
+            }
+        }
+    }
+
+    /*** Handle Arguments ***/
+    /* All */
+    if(all)
+    {
+    	cliCallback_printfCallback(true, "All\n");
+    	for(i = LCD_C_SEGMENT_LINE_0; i <= LCD_C_SEGMENT_LINE_63; i++)
+    	{
+    		if(i == LCD_C_SEGMENT_LINE_0)
+    			lcdDriver_set(i, 0xFF, true, blink);
+    		else
+    			lcdDriver_set(i, 0xFF, false, blink);
+    	}
+    }
+
+    /* Help */
+    if(help)
+    {
+        cliCallback_printfCallback(false, "usage: %s [OPTION]\n", CLI_COMMAND_HANDLER_CALLBACK_LCD_COMMAND_NAME);
+        cliCallback_printfCallback(false, "  -a, --all\n");
+        cliCallback_printfCallback(false, "  -b, --blink\n");
+        cliCallback_printfCallback(false, "  -c, --clear\n");
+        cliCallback_printfCallback(false, "  -h, --help\n");
+        cliCallback_printfCallback(false, "  -s[SEGMENT], --segment=[SEGMENT]\n");
+        cliCallback_printfCallback(true, "  -v[VALUE], --value=[VALUE]\n");
+    }
+
+    /* Set */
+    if((segment != (uint8_t)~0) && (value != (uint8_t)~0))
+    {
+    	cliCallback_printfCallback(true, "Set\n");
+    	lcdDriver_set(segment, value, clear, blink);
+    }
+
+    return STATUS_SUCCESS;
+}
 
 /****************************************************************************************************
  * FUNCT:   cliCommandHandlerCallback_ledCommandHandlerCallback
@@ -134,10 +249,10 @@ static status_t cliCommandHandlerCallback_ledCommandHandlerCallback(uint8_t argc
     if(help)
     {
         cliCallback_printfCallback(false, "usage: %s [OPTION]\n", CLI_COMMAND_HANDLER_CALLBACK_LED_COMMAND_NAME);
-        cliCallback_printfCallback(false, "  -h, --help (Help)\n");
-        cliCallback_printfCallback(false, "  -l, --led (LED)\n");
-        cliCallback_printfCallback(false, "  -o, --on (On Milliseconds)\n");
-        cliCallback_printfCallback(true, "  -O, --off (Off Milliseconds)\n");
+        cliCallback_printfCallback(false, "  -h, --help\n");
+        cliCallback_printfCallback(false, "  -l[LED], --led=[LED]\n");
+        cliCallback_printfCallback(false, "  -o[ON_MILLISECONDS], --on=[ON_MILLISECONDS]\n");
+        cliCallback_printfCallback(true, "  -O[OFF_MILLISECONDS], --off=[OFF_MILLISECONDS]\n");
     }
 
     /* Enable Blink */
@@ -216,11 +331,11 @@ static status_t cliCommandHandlerCallback_randomCommandHandlerCallback(uint8_t a
     if(help)
     {
         cliCallback_printfCallback(false, "usage: %s [OPTION]\n", CLI_COMMAND_HANDLER_CALLBACK_RANDOM_COMMAND_NAME);
-        cliCallback_printfCallback(false, "  -c[COUNT], --count=[COUNT] (Set Random 32-Bit Integer Count)\n");
-        cliCallback_printfCallback(false, "  -h, --help (Help)\n");
-        cliCallback_printfCallback(false, "  -s, --seed (Get Seed)\n");
-        cliCallback_printfCallback(false, "  -S, --signed (Get Random Signed 32-Bit Integer)\n");
-        cliCallback_printfCallback(true, "  -u, --unsigned (Get Random Unsigned 32-Bit Integer)\n"); // Flush
+        cliCallback_printfCallback(false, "  -c[COUNT], --count=[COUNT]\n");
+        cliCallback_printfCallback(false, "  -h, --help\n");
+        cliCallback_printfCallback(false, "  -s, --seed\n");
+        cliCallback_printfCallback(false, "  -S, --signed\n");
+        cliCallback_printfCallback(true, "  -u, --unsigned\n"); // Flush
     }
 
     /* Seed */
@@ -322,9 +437,9 @@ static status_t cliCommandHandlerCallback_systemCommandHandlerCallback(uint8_t a
     if(help)
     {
         cliCallback_printfCallback(false, "usage: %s [OPTION]\n", CLI_COMMAND_HANDLER_CALLBACK_SYSTEM_COMMAND_NAME);
-        cliCallback_printfCallback(false, "  -c, --clock (Clock Information)\n");
-        cliCallback_printfCallback(false, "  -h, --help (Help)\n");
-        cliCallback_printfCallback(true, "  -r, --reset (Reset)\n"); // Flush
+        cliCallback_printfCallback(false, "  -c, --clock\n");
+        cliCallback_printfCallback(false, "  -h, --help\n");
+        cliCallback_printfCallback(true, "  -r, --reset\n"); // Flush
     }
 
     /* Reset (Must Come Last) */

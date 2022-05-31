@@ -76,6 +76,7 @@ APPLICATION_SOURCES :=                          \
   ./test/button_driver_test.c                   \
   ./test/cli_callback_test.c                    \
   ./test/cli_command_handler_callback_test.c    \
+  ./test/lcd_driver_test.c                      \
   ./test/led_driver_test.c                      \
   ./test/system_test.c                          \
   ../../app/system.c                            \
@@ -83,6 +84,7 @@ APPLICATION_SOURCES :=                          \
   ../../callback/cli_command_handler_callback.c \
   ../../callback/random_callback.c              \
   ../../driver/button_driver.c                  \
+  ../../driver/lcd_driver.c                     \
   ../../driver/led_driver.c
 
 LIBRARY_SOURCES :=                                \

@@ -47,6 +47,66 @@ TEST_TEAR_DOWN(cli_command_handler_callback_test)
  * Tests
  ****************************************************************************************************/
 
+TEST(cli_command_handler_callback_test, lcdCommandHandlerCallback)
+{
+    const char *command, *expectedOutput;
+    char actualOutput[CLI_CALLBACK_TEST_PRINTF_OUTPUT_LENGTH];
+    size_t i;
+
+    /*** Test Data ***/
+    const cliCommandHandlerCallbackTest_commandTestData_t CommandTestData[] =
+    {
+    	/*** All ***/
+    	/* Success */
+		{"lcd -a\n", "All\n[root/]$ "},
+		{"lcd --all\n", "All\n[root/]$ "},
+
+    	/* Failure */
+		{"lcd -aok\n", "[root/]$ "},
+		{"lcd --all=10\n", "[root/]$ "},
+
+    	/*** Set ***/
+    	/* Success */
+		{"lcd -s0 -v0\n", "Set\n[root/]$ "},
+		{"lcd -b -s1 -v1\n", "Set\n[root/]$ "},
+		{"lcd -c -s2 -v2\n", "Set\n[root/]$ "},
+		{"lcd -b -c -s3 -v3\n", "Set\n[root/]$ "},
+		{"lcd --segment=4 --value=4\n", "Set\n[root/]$ "},
+		{"lcd --blink --segment=5 --value=5\n", "Set\n[root/]$ "},
+		{"lcd --clear --segment=6 --value=6\n", "Set\n[root/]$ "},
+		{"lcd --blink --clear --segment=7 --value=7\n", "Set\n[root/]$ "},
+
+        /*** Help ***/
+        /* Success */
+        {"lcd -h\n", "usage: lcd [OPTION]\n  -a, --all\n  -b, --blink\n  -c, --clear\n  -h, --help\n  -s[SEGMENT], --segment=[SEGMENT]\n  -v[VALUE], --value=[VALUE]\n[root/]$ "},
+        {"lcd --help\n", "usage: lcd [OPTION]\n  -a, --all\n  -b, --blink\n  -c, --clear\n  -h, --help\n  -s[SEGMENT], --segment=[SEGMENT]\n  -v[VALUE], --value=[VALUE]\n[root/]$ "},
+
+        /* Failure */
+        {"lcd -hme\n", "[root/]$ "},
+        {"lcd --help=please\n", "[root/]$ "}
+    };
+    size_t CommandTestDataLength = sizeof(CommandTestData) / sizeof(CommandTestData[0]);
+
+    /********************************************************************************
+     * Test 1: LCD Command Handler
+     ********************************************************************************/
+
+    /*** Subtest 1: Run Tests ***/
+    for(i = 0; i < CommandTestDataLength; i++)
+    {
+        /* Set Up */
+        command = CommandTestData[i].command;
+        expectedOutput = CommandTestData[i].expectedOutput;
+
+        /* Send Command */
+        cliCallbackTest_sendCommand(command);
+
+        /* Verify Output As Expected */
+        cliCallbackTest_getPrintfOutputCopy(actualOutput);
+        TEST_ASSERT_EQUAL_STRING(expectedOutput, actualOutput);
+    }
+}
+
 TEST(cli_command_handler_callback_test, ledCommandHandlerCallback)
 {
     const char *command, *expectedOutput;
@@ -71,8 +131,8 @@ TEST(cli_command_handler_callback_test, ledCommandHandlerCallback)
         
         /*** Help ***/
         /* Success */
-        {"led -h\n", "usage: led [OPTION]\n  -h, --help (Help)\n  -l, --led (LED)\n  -o, --on (On Milliseconds)\n  -O, --off (Off Milliseconds)\n[root/]$ "},
-        {"led --help\n", "usage: led [OPTION]\n  -h, --help (Help)\n  -l, --led (LED)\n  -o, --on (On Milliseconds)\n  -O, --off (Off Milliseconds)\n[root/]$ "},
+        {"led -h\n", "usage: led [OPTION]\n  -h, --help\n  -l[LED], --led=[LED]\n  -o[ON_MILLISECONDS], --on=[ON_MILLISECONDS]\n  -O[OFF_MILLISECONDS], --off=[OFF_MILLISECONDS]\n[root/]$ "},
+        {"led --help\n", "usage: led [OPTION]\n  -h, --help\n  -l[LED], --led=[LED]\n  -o[ON_MILLISECONDS], --on=[ON_MILLISECONDS]\n  -O[OFF_MILLISECONDS], --off=[OFF_MILLISECONDS]\n[root/]$ "},
         
         /* Failure */
         {"led -hme\n", "[root/]$ "},
@@ -110,8 +170,8 @@ TEST(cli_command_handler_callback_test, randomCommandHandlerCallback)
     const cliCommandHandlerCallbackTest_commandTestData_t CommandTestData[] =
     {        
         /* Success */
-        {"random -h\n", "usage: random [OPTION]\n  -c[COUNT], --count=[COUNT] (Set Random 32-Bit Integer Count)\n  -h, --help (Help)\n  -s, --seed (Get Seed)\n  -S, --signed (Get Random Signed 32-Bit Integer)\n  -u, --unsigned (Get Random Unsigned 32-Bit Integer)\n[root/]$ "},
-        {"random --help\n", "usage: random [OPTION]\n  -c[COUNT], --count=[COUNT] (Set Random 32-Bit Integer Count)\n  -h, --help (Help)\n  -s, --seed (Get Seed)\n  -S, --signed (Get Random Signed 32-Bit Integer)\n  -u, --unsigned (Get Random Unsigned 32-Bit Integer)\n[root/]$ "},
+        {"random -h\n", "usage: random [OPTION]\n  -c[COUNT], --count=[COUNT]\n  -h, --help\n  -s, --seed\n  -S, --signed\n  -u, --unsigned\n[root/]$ "},
+        {"random --help\n", "usage: random [OPTION]\n  -c[COUNT], --count=[COUNT]\n  -h, --help\n  -s, --seed\n  -S, --signed\n  -u, --unsigned\n[root/]$ "},
         
         /* Failure */
         {"random -hme\n", "[root/]$ "},
@@ -184,8 +244,8 @@ TEST(cli_command_handler_callback_test, systemCommandHandlerCallback)
         
         /*** Help ***/
         /* Success */
-        {"system -h\n", "usage: system [OPTION]\n  -c, --clock (Clock Information)\n  -h, --help (Help)\n  -r, --reset (Reset)\n[root/]$ "},
-        {"system --help\n", "usage: system [OPTION]\n  -c, --clock (Clock Information)\n  -h, --help (Help)\n  -r, --reset (Reset)\n[root/]$ "},
+        {"system -h\n", "usage: system [OPTION]\n  -c, --clock\n  -h, --help\n  -r, --reset\n[root/]$ "},
+        {"system --help\n", "usage: system [OPTION]\n  -c, --clock\n  -h, --help\n  -r, --reset\n[root/]$ "},
         
         /* Failure */
         {"system -hme\n", "[root/]$ "},
@@ -228,6 +288,7 @@ TEST(cli_command_handler_callback_test, systemCommandHandlerCallback)
 
 TEST_GROUP_RUNNER(cli_command_handler_callback_test)
 {
+	RUN_TEST_CASE(cli_command_handler_callback_test, lcdCommandHandlerCallback)
     RUN_TEST_CASE(cli_command_handler_callback_test, ledCommandHandlerCallback)
     RUN_TEST_CASE(cli_command_handler_callback_test, randomCommandHandlerCallback)
     RUN_TEST_CASE(cli_command_handler_callback_test, systemCommandHandlerCallback)

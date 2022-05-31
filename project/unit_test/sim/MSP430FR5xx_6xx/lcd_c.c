@@ -12,6 +12,7 @@
 //*****************************************************************************
 
 #include "inc/hw_memmap.h"
+#include <stdint.h>
 
 #ifdef __MSP430_HAS_LCD_C__
 #include "lcd_c.h"
@@ -97,14 +98,22 @@ void LCD_C_disableInterrupt (uint16_t baseAddress, uint16_t mask)
     HWREG16(baseAddress + OFS_LCDCCTL1) &= ~mask;
 }
 
- void LCD_C_clearMemory(uint16_t baseAddress)
- {
+void LCD_C_clearMemory(uint16_t baseAddress)
+{
+	uint16_t i;
     HWREG16(baseAddress + OFS_LCDCMEMCTL) |= LCDCLRM;
- }
+    for(i = OFS_LCDM1; i <= OFS_LCDM40; i++)
+    	HWREG8(baseAddress + i) = 0;
+    HWREG16(baseAddress + OFS_LCDCMEMCTL) &= ~LCDCLRM;
+}
 
 void LCD_C_clearBlinkingMemory(uint16_t baseAddress)
 {
-   HWREG16(baseAddress + OFS_LCDCMEMCTL) |= LCDCLRBM;
+	uint16_t i;
+    HWREG16(baseAddress + OFS_LCDCMEMCTL) |= LCDCLRBM;
+    for(i = OFS_LCDBM1; i <= OFS_LCDBM20; i++)
+    	HWREG8(baseAddress + i) = 0;
+    HWREG16(baseAddress + OFS_LCDCMEMCTL) &= ~LCDCLRBM;
 }
 
 void LCD_C_selectDisplayMemory(uint16_t baseAddress, uint16_t displayMemory)

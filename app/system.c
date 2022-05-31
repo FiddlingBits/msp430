@@ -15,6 +15,7 @@
 #include "driver_config.h"
 #include "gpio.h"
 #include "led_driver.h"
+#include "lcd_driver.h"
 #include "msp430fr6989.h"
 #include "pmm.h"
 #include "project.h"
@@ -92,6 +93,7 @@ static void system_initApplication(void)
     /*** First Stage Initialization: No Dependencies ***/
     buttonDriver_init();
     cliCallback_init();
+    lcdDriver_init();
     ledDriver_init();
     randomCallback_init();
 

@@ -3075,16 +3075,19 @@ typedef void (* __SFR_FARPTR)();
 #define LCDMX0                 (0x0008)       /* LCD_C Mux Rate Bit: 0 */
 #define LCDMX1                 (0x0010)       /* LCD_C Mux Rate Bit: 1 */
 #define LCDMX2                 (0x0020)       /* LCD_C Mux Rate Bit: 2 */
+#define LCDMX                  (LCDMX2 | LCDMX1 | LCDMX0)
 //#define RESERVED            (0x0040)  /* LCD_C RESERVED */
 #define LCDSSEL                (0x0080)       /* LCD_C Clock Select */
 #define LCDPRE0                (0x0100)       /* LCD_C LCD frequency pre-scaler Bit: 0 */
 #define LCDPRE1                (0x0200)       /* LCD_C LCD frequency pre-scaler Bit: 1 */
 #define LCDPRE2                (0x0400)       /* LCD_C LCD frequency pre-scaler Bit: 2 */
+#define LCDPRE                 (LCDPRE2 | LCDPRE1 | LCDPRE0)
 #define LCDDIV0                (0x0800)       /* LCD_C LCD frequency divider Bit: 0 */
 #define LCDDIV1                (0x1000)       /* LCD_C LCD frequency divider Bit: 1 */
 #define LCDDIV2                (0x2000)       /* LCD_C LCD frequency divider Bit: 2 */
 #define LCDDIV3                (0x4000)       /* LCD_C LCD frequency divider Bit: 3 */
 #define LCDDIV4                (0x8000)       /* LCD_C LCD frequency divider Bit: 4 */
+#define LCDDIV                 (LCDDIV4 | LCDDIV3 | LCDDIV2 | LCDDIV1 | LCDDIV0)
 
 // LCDCCTL0
 #define LCDON_L                (0x0001)       /* LCD_C LCD On */
@@ -3220,12 +3223,15 @@ typedef void (* __SFR_FARPTR)();
 // LCDCBLKCTL
 #define LCDBLKMOD0             (0x0001)       /* LCD_C Blinking mode Bit: 0 */
 #define LCDBLKMOD1             (0x0002)       /* LCD_C Blinking mode Bit: 1 */
+#define LCDBLKMOD              (LCDBLKMOD1 | LCDBLKMOD0)
 #define LCDBLKPRE0             (0x0004)       /* LCD_C Clock pre-scaler for blinking frequency Bit: 0 */
 #define LCDBLKPRE1             (0x0008)       /* LCD_C Clock pre-scaler for blinking frequency Bit: 1 */
 #define LCDBLKPRE2             (0x0010)       /* LCD_C Clock pre-scaler for blinking frequency Bit: 2 */
+#define LCDBLKPRE              (LCDBLKPRE2 | LCDBLKPRE1 | LCDBLKPRE0)
 #define LCDBLKDIV0             (0x0020)       /* LCD_C Clock divider for blinking frequency Bit: 0 */
 #define LCDBLKDIV1             (0x0040)       /* LCD_C Clock divider for blinking frequency Bit: 1 */
 #define LCDBLKDIV2             (0x0080)       /* LCD_C Clock divider for blinking frequency Bit: 2 */
+#define LCDBLKDIV              (LCDBLKDIV2 | LCDBLKDIV1 | LCDBLKDIV0)
 
 // LCDCBLKCTL
 #define LCDBLKMOD0_L           (0x0001)       /* LCD_C Blinking mode Bit: 0 */
@@ -3303,6 +3309,7 @@ typedef void (* __SFR_FARPTR)();
 #define VLCD3                  (0x1000)       /* VLCD select: 3 */
 #define VLCD4                  (0x2000)       /* VLCD select: 4 */
 #define VLCD5                  (0x4000)       /* VLCD select: 5 */
+#define VLCD                   (VLCD5 | VLCD4 | VLCD3 | VLCD2 | VLCD1 | VLCD0)
 
 // LCDCVCTL
 #define LCD2B_L                (0x0001)       /* Selects 1/2 bias. */
@@ -3327,6 +3334,7 @@ typedef void (* __SFR_FARPTR)();
 #define VLCDREF_1              (0x0002)       /* External */
 #define VLCDREF_2              (0x0004)       /* Reserved */
 #define VLCDREF_3              (0x0006)       /* Reserved */
+#define VLCDREF                (VLCDREF_3)
 
 /* Charge pump voltage selections */
 #define VLCD_0                 (0x0000)       /* Charge pump disabled */

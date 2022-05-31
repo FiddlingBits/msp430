@@ -21,6 +21,7 @@
 #pragma vector=PORT1_VECTOR
 __interrupt void interruptHandler_port1Vector(void)
 {
+	/*** Handle Interrupt ***/
 	buttonDriver_portInterruptHandler(__even_in_range(P1IV, P1IV_P1IFG7));
 }
 
